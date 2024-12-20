@@ -1,0 +1,506 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 15cm
+\paperheight 8cm
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Crank-Nicolson Time Stepping with Flux Corrected Transport
+\end_layout
+
+\begin_layout Author
+Hilary Weller and James Woodfield
+\end_layout
+
+\begin_layout Standard
+\noindent
+Consider the linear advection equation
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-\nabla\cdot\left(\mathbf{u}\Psi\right)\label{eq:advection}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\Psi=\rho\psi$
+\end_inset
+
+ is a density weighted variable and 
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+ is divergent velocity fluid.
+ We are searching for an advection scheme to solve (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:advection"
+
+\end_inset
+
+) that satisfies:
+\end_layout
+
+\begin_layout Enumerate
+Monotonic for all Courant numbers when the velocity field is divergence
+ free .
+\end_layout
+
+\begin_layout Enumerate
+Approaching second-order accuracy in space and time for smooth fields when
+ the Courant number is less than one.
+\end_layout
+
+\begin_layout Enumerate
+First-order accurate for large Courant numbers.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A smooth transition between first- and second-order accurate as the Courant
+ number varies.
+\end_layout
+
+\begin_layout Enumerate
+Uses implicit time-stepping only where the Courant number is larger than
+ one and the immediate surroundings.
+\end_layout
+
+\begin_layout Standard
+We assume that the spatial discretisation can be separated into a low-order
+ monotonic discretisation and a high-order correction that needs to be limited
+ in order to maintain monotonicity:
+\begin_inset Formula 
+\[
+\nabla\cdot\left(\mathbf{u}\Psi\right)=\nabla_{\ell}\cdot\left(\mathbf{u}\Psi\right)+\nabla_{h}\cdot\left(\mathbf{u}\Psi\right).
+\]
+
+\end_inset
+
+We use the 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Zal79"
+
+\end_inset
+
+ limiter and write it as:
+\begin_inset Formula 
+\begin{equation}
+Z\left(\tau,\ \nabla_{h}\cdot\left(\mathbf{u}\Psi\right),\ \Psi^{n},\ \Psi^{\ell}\right)
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\Psi^{\ell}=\Psi^{n}+\tau\nabla_{\ell}\cdot\left(\mathbf{u}\Psi\right)
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\nabla_{\ell}\cdot\left(\mathbf{u}\Psi\right)$
+\end_inset
+
+ is first-order and might be calculated explicitly or implicitly.
+ In the absence of limiters the time-stepping should be Crank-Nicolson with
+ off-centering 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and with the high-order correction calculated explicitly in 
+\begin_inset Formula $K$
+\end_inset
+
+ predector-corrector stages denoted by superscripts 
+\begin_inset Formula $(k)$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi^{(k=0)} & = & \Psi^{n}\\
+\Psi^{(k+1)} & = & \Psi^{n}-(1-\alpha)\Delta t\nabla\cdot\mathbf{u}\Psi^{n}-\alpha\Delta t\nabla_{\ell}\cdot\mathbf{u}\Psi^{(k+1)}-\alpha\Delta t\nabla_{h}\cdot\mathbf{u}\Psi^{(k)}\\
+\Psi^{n+1} & = & \Psi^{(K)}.
+\end{eqnarray*}
+
+\end_inset
+
+The term 
+\begin_inset Formula $(1-\alpha)\Delta t\nabla\cdot\mathbf{u}\Psi^{n}$
+\end_inset
+
+ needs limiting and for Courant numbers 
+\begin_inset Formula $c>1/(1-\alpha)$
+\end_inset
+
+ even the low-order part needs limiting.
+ A suitable monotonic 
+\begin_inset Formula $\Psi^{\ell}$
+\end_inset
+
+ must be provided to the limiter in order to find local maxima and minima.
+ This field need not have conservation properties in common with 
+\begin_inset Formula $\Psi^{n}$
+\end_inset
+
+.
+ A suitable field could therefore be the solution of:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{\ell0}=\begin{cases}
+\Psi^{n}-(1-\alpha)\Delta t\nabla_{\ell}\cdot\mathbf{u}\Psi^{n} & \text{where }c>1/(1-\alpha)\\
+\Psi^{n}-(1-\alpha)\Delta t\nabla_{\ell}\cdot\mathbf{u}\Psi^{\ell} & \text{otherwise}.
+\end{cases}
+\end{equation}
+
+\end_inset
+
+The monotonic solution for the limiter for the 
+\begin_inset Formula $\alpha\Delta t\nabla_{h}\cdot\mathbf{u}\Psi^{(k)}$
+\end_inset
+
+ term is 
+\begin_inset Formula $\Psi^{k}$
+\end_inset
+
+ as this is needed before the implicit solve and so 
+\begin_inset Formula $\Psi^{k+1}$
+\end_inset
+
+ is not yet available.
+ Another option is to split up the implicit stage into an implicit update
+ plus an explicit correction:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi^{\ell0} & = & \begin{cases}
+\Psi^{n}-(1-\alpha)\Delta t\nabla_{\ell}\cdot\mathbf{u}\Psi^{n} & \text{where }c>1/(1-\alpha)\\
+\Psi^{n}-(1-\alpha)\Delta t\nabla_{\ell}\cdot\mathbf{u}\Psi^{\ell} & \text{otherwise}.
+\end{cases}\\
+\Psi^{\ell1} & = & \Psi^{n}+Z\left((1-\alpha)\Delta t,\ \nabla\cdot\mathbf{u}\Psi^{n},\Psi^{n},\ \Psi^{\ell0}\right)\\
+\Psi^{(k=0)} & = & \Psi^{n}\\
+\text{loop over }k:\\
+\Psi^{\ell k} & = & \Psi^{\ell1}-\alpha\Delta t\nabla_{\ell}\cdot\mathbf{u}\Psi^{\ell k}\\
+\Psi^{(k+1)} & = & \Psi^{\ell k}+Z\left(\alpha\Delta t,\ \nabla_{h}\cdot\mathbf{u}\Psi^{(k)},\ \Psi^{n},\ \Psi^{\ell k}\right)\\
+\Psi^{n+1} & = & \Psi^{(K)}.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now describe the 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Zal79"
+
+\end_inset
+
+ limiter, 
+\begin_inset Formula $Z\left(\tau,\ \nabla_{h}\cdot\left(\mathbf{u}\Psi\right),\ \Psi^{n},\ \Psi^{\ell}\right)$
+\end_inset
+
+.
+ First we calculate the high-order fluxes: 
+\begin_inset Formula 
+\begin{eqnarray*}
+A & = & \left(\Psi_{h}-\Psi_{\ell}\right)\mathbf{u}\cdot\mathbf{S}
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\Psi_{h}$
+\end_inset
+
+ is the high-order approximation of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the face, 
+\begin_inset Formula $\Psi_{\ell}$
+\end_inset
+
+ is the low-order approximation and 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ is the outward pointing normal to the face with magnitude of the face area
+ (the face area vector).
+ From these fluxes we calculate the increments to the cell values based
+ on fluxes into and out of the cell:
+\begin_inset Formula 
+\begin{eqnarray*}
+P^{p} & = & -\frac{\tau}{V}\sum_{A>0}A\\
+P^{m} & = & -\frac{\tau}{V}\sum_{A<0}A.
+\end{eqnarray*}
+
+\end_inset
+
+Next the local extrema are found for each cell, 
+\begin_inset Formula $i$
+\end_inset
+
+, from 
+\begin_inset Formula $\Psi^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Psi^{\ell}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{i}^{\max} & = & \max\left(\Psi_{i}^{n},\ \Psi^{\ell},\ \Psi_{\text{neighbours of }i}^{n},\ \Psi_{\text{neighbours of }i}^{\ell}\right).
+\end{eqnarray*}
+
+\end_inset
+
+From these we calculate the allowable rise and fall for each cell:
+\begin_inset Formula 
+\begin{eqnarray*}
+Q^{p} & = & \Psi^{\max}-\Psi^{\ell}\\
+Q^{m} & = & \Psi^{\ell}-\Psi^{\min}.
+\end{eqnarray*}
+
+\end_inset
+
+Next we calculate the bounds on the limits for the fluxes:
+\begin_inset Formula 
+\begin{eqnarray*}
+R^{p} & = & \begin{cases}
+\min\left(1,\ Q^{p}/P^{p}\right) & P^{p}>0\\
+0 & P^{p}=0
+\end{cases}\\
+R^{m} & = & \begin{cases}
+\min\left(1,\ Q^{m}/P^{m}\right) & P^{m}>0\\
+0 & P_{m}=0.
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+From
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ these we calculate the multipliers used to limit the fluxes:
+\begin_inset Formula 
+\begin{eqnarray*}
+C & = & \begin{cases}
+\min\left(R_{\text{nei}}^{p},\ R_{\text{own}}^{m}\right) & A\ge0\\
+\min\left(R_{\text{own}}^{p},\ R_{\text{nei}}^{m}\right) & A<0
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+then:
+\begin_inset Formula 
+\begin{equation}
+Z\left(\tau,\ \nabla_{h}\cdot\left(\mathbf{u}\Psi\right),\ \Psi^{n},\ \Psi^{\ell}\right)=-\frac{\tau}{V}\sum_{\text{faces}}CA
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Only Apply Flux correction Once
+\end_layout
+
+\begin_layout Standard
+We will need to start with the low-order prediction that gets corrected
+ at the end:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{\ell}=\Psi^{n}-\nabla_{\ell}\cdot\left(\mathbf{f}\Psi^{\ell}\right)
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}=(1-\alpha)\Delta t\mathbf{u}^{n}+\alpha\Delta t\mathbf{u}^{n+1}
+\end{equation}
+
+\end_inset
+
+The remainder of the steps are aimed at predicting 
+\begin_inset Formula $\Psi^{h}$
+\end_inset
+
+, the limited high-order correction so that
+\begin_inset Formula 
+\begin{equation}
+\Psi^{n+1}=\Psi^{\ell}+\nabla_{h}\cdot\left(\mathbf{f}\Psi^{h}\right).
+\end{equation}
+
+\end_inset
+
+The first step is to calculate 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the mid-point:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{m}=\Psi^{n}-(1-\alpha)\Delta t\nabla\cdot\left(\mathbf{u}^{n}\Psi^{n}\right)
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\nabla\cdot=\nabla_{\ell}\cdot+\nabla_{h}\cdot$
+\end_inset
+
+.
+ Next we iterate for 
+\begin_inset Formula $k=0,...K$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi^{k=0} & = & \Psi^{m}\\
+\Psi^{k>0} & = & \Psi^{m}-\alpha\Delta t\nabla_{\ell}\cdot\Psi^{k}-\alpha\Delta t\nabla_{h}\cdot\Psi^{k-1}.
+\end{eqnarray*}
+
+\end_inset
+
+Finally the limiter is applied to 
+\begin_inset Formula $\Psi^{K}$
+\end_inset
+
+ to calculate 
+\begin_inset Formula $\Psi^{h}$
+\end_inset
+
+ limiting to stay between 
+\begin_inset Formula $\Psi^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Psi^{\ell}$
+\end_inset
+
+ using flux 
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "abbrvnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

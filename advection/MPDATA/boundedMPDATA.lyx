@@ -1,0 +1,330 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Positivity of MPDATA
+\end_layout
+
+\begin_layout Standard
+MPDATA is
+\begin_inset Formula 
+\begin{eqnarray}
+\text{explicit upwind step: }\psi_{C}^{1} & = & \psi_{C}^{n}-\frac{\Delta t}{\mathcal{V}_{C}}\sum_{f\in C}\psi_{\text{up}}^{n}U_{f}\\
+\text{explicit correction: }\psi_{C}^{n+1} & = & \psi_{C}^{1}-\frac{\Delta t}{\mathcal{V}_{C}}\sum_{f\in C}\psi_{\text{vup}}^{1}V_{f}\\
+\text{where }V_{f}=\mathbf{v}_{f}\cdot\mathbf{S}_{f} & = & \frac{U_{f}}{\psi}\left\{ \bm{\delta}\cdot\nabla\psi-\frac{\Delta t}{2}\mathbf{u}_{f}\cdot\left(\nabla\psi\right)_{f}\right\} \label{eq:antiDfluxExp}\\
+\bm{\delta} & = & \mathbf{x}_{f}-\mathbf{x}_{\text{up}}
+\end{eqnarray}
+
+\end_inset
+
+and 
+\begin_inset Formula $V_{f}$
+\end_inset
+
+ is the ante-diffusive flux.
+ The ante-diffusive step will be positive preserving if
+\begin_inset Formula 
+\begin{equation}
+\frac{V_{f}}{U_{f}}\le\frac{1}{2}.
+\end{equation}
+
+\end_inset
+
+We will first consider the term for the spatial correction:
+\begin_inset Formula 
+\begin{equation}
+S_{p}=\frac{\bm{\delta}\cdot\nabla\psi}{\psi_{f}}=\frac{\nabla_{\delta}\psi}{\psi_{f}}
+\end{equation}
+
+\end_inset
+
+Consider 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SS05b"
+literal "false"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Quotation
+For the sake of computational stability, we shall extrapolate from the experienc
+e with ﬁnite-diﬀerence formulations and assure that the denominators and
+ numerators in approximations to all 
+\begin_inset Formula $\sim\Psi^{-1}\partial\Psi$
+\end_inset
+
+ factors in (13) use the same elements.
+ This allows for exploiting the elementary boundedness property 
+\begin_inset Formula $|\sum\pm\Psi/\sum\Psi|\le1$
+\end_inset
+
+ of positive-definite scalar ﬁelds.
+\end_layout
+
+\begin_layout Standard
+We assume that 
+\begin_inset Formula $\nabla\psi$
+\end_inset
+
+ is given by a linear combination of 
+\begin_inset Formula $\psi$
+\end_inset
+
+ values in a stencil around face 
+\begin_inset Formula $f$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\nabla\psi=\sum_{C}\mathbf{g}_{c}\psi_{c}\label{eq:gradPsiSum}
+\end{equation}
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{equation}
+\sum_{C}\mathbf{g}_{c}=\mathbf{0}
+\end{equation}
+
+\end_inset
+
+and we assume that 
+\begin_inset Formula $\psi_{f}$
+\end_inset
+
+ is defined using the same stencil and weights 
+\begin_inset Formula $w_{c}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\psi_{f}=\sum_{C}w_{c}\psi_{c}.
+\end{equation}
+
+\end_inset
+
+We need to find 
+\begin_inset Formula $w_{c}$
+\end_inset
+
+ satisfying the constraints:
+\begin_inset Formula 
+\begin{eqnarray}
+\sum_{C}w_{c} & = & 1\label{eq:sumw1}
+\end{eqnarray}
+
+\end_inset
+
+where cell centre 
+\begin_inset Formula $C$
+\end_inset
+
+ is at point 
+\begin_inset Formula $\mathbf{r}_{c}$
+\end_inset
+
+ and the face centre is at 
+\begin_inset Formula $\mathbf{r}_{f}=\mathbf{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We know that 
+\begin_inset Formula 
+\begin{eqnarray}
+\nabla_{\delta}\psi & = & \sum_{C}\bm{\delta}\cdot\mathbf{g}_{c}\psi_{c}
+\end{eqnarray}
+
+\end_inset
+
+so define
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{f} & = & \sum_{C}|\bm{\delta}\cdot\mathbf{g}_{c}|\psi_{c}
+\end{eqnarray}
+
+\end_inset
+
+to give 
+\begin_inset Formula $|S_{p}|\le1$
+\end_inset
+
+.
+ What about (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:sumw1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)? Let us assume that the upwind cell of the stencil is 0 and the downwind
+ cell is 1 so that 
+\begin_inset Formula $\mathbf{r}_{0}=-\bm{\delta}$
+\end_inset
+
+.
+ We need to ensure that 
+\begin_inset Formula $\mathbf{g}_{c}$
+\end_inset
+
+ are chosen so that the following hold exactly:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{0} & = & \psi_{f}+\mathbf{r}_{0}\cdot\nabla\psi\\
+\psi_{1} & = & \psi_{f}+\mathbf{r}_{1}\cdot\nabla\psi
+\end{eqnarray*}
+
+\end_inset
+
+From these we can deduce:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{0} & = & \sum_{C}\left\{ |\bm{\delta}\cdot\mathbf{g}_{c}|+\mathbf{r}_{0}\cdot\mathbf{g}_{c}\right\} \psi_{c}\ \forall c\\
+\text{and }\psi_{1} & = & \sum_{C}\left\{ |\bm{\delta}\cdot\mathbf{g}_{c}|+\mathbf{r}_{1}\cdot\mathbf{g}_{c}\right\} \psi_{c}\ \forall c\\
+\implies\psi_{0} & = & \left\{ |\bm{\delta}\cdot\mathbf{g}_{c}|+\mathbf{r}_{0}\cdot\mathbf{g}_{0}\right\} \psi_{0}+\sum_{C\ne0}\left\{ |\bm{\delta}\cdot\mathbf{g}_{c}|+\mathbf{r}_{0}\cdot\mathbf{g}_{c}\right\} \psi_{c}\\
+\text{and }\psi_{1} & = & \left\{ |\bm{\delta}\cdot\mathbf{g}_{c}|+\mathbf{r}_{1}\cdot\mathbf{g}_{1}\right\} \psi_{1}+\sum_{C\ne1}\left\{ |\bm{\delta}\cdot\mathbf{g}_{c}|+\mathbf{r}_{1}\cdot\mathbf{g}_{c}\right\} \psi_{c}\\
+\implies|\bm{\delta}\cdot\mathbf{g}_{c}| & = & 1-\mathbf{r}_{1}\cdot\mathbf{g}_{1}\\
+\text{and }|\bm{\delta}\cdot\mathbf{g}_{c}| & = & -\mathbf{r}_{1}\cdot\mathbf{g}_{c}\text{ for }C\ne1\\
+\implies\sum_{C}|\bm{\delta}\cdot\mathbf{g}_{c}| & = & 1-\mathbf{r}_{1}\cdot\mathbf{g}_{1}-\sum_{C\ne1}\mathbf{r}_{1}\cdot\mathbf{g}_{c}=1-\mathbf{r}_{1}\cdot\cancelto{0}{\sum_{C}\mathbf{g}_{C}}=1
+\end{eqnarray*}
+
+\end_inset
+
+as required.
+ In summary, the 
+\begin_inset Formula $\mathbf{g}_{c}$
+\end_inset
+
+ must be chosen so that:
+\begin_inset Formula 
+\begin{eqnarray*}
+\sum_{C}\mathbf{g}_{c} & = & \mathbf{0}\\
+\psi_{1}-\psi_{0} & = & \left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\sum_{C}\mathbf{g}_{c}\psi_{C}\\
+\implies\psi_{1}\left\{ 1-\left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\mathbf{g}_{1}\right\}  & = & \psi_{0}\left\{ 1+\left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\mathbf{g}_{0}\right\} +\sum_{C\ne0,1}\left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\mathbf{g}_{c}\psi_{C}\\
+\implies &  & 1-\left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\mathbf{g}_{1}=0\\
+ &  & 1+\left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\mathbf{g}_{0}=0\\
+ &  & \left(\mathbf{r}_{1}-\mathbf{r}_{0}\right)\cdot\mathbf{g}_{c}=0\text{ for }C\ne0,1\\
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next consider the temporal correction:
+\begin_inset Formula 
+\begin{equation}
+T=-\frac{\Delta t}{2\psi_{f}}\mathbf{u}_{f}\cdot\left(\nabla\psi\right)_{f}=
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "numerics"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

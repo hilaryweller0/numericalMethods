@@ -1,0 +1,522 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{animate}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 15cm
+\paperheight 8cm
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+MPDATA with Crank-Nicolson Time Stepping
+\end_layout
+
+\begin_layout Author
+Hilary and James Woodfield
+\end_layout
+
+\begin_layout Standard
+\noindent
+To solve 
+\begin_inset Formula 
+\begin{equation}
+{\textstyle \frac{\partial\Psi}{\partial t}=-\nabla\cdot\left(\mathbf{u}\Psi\right)}
+\end{equation}
+
+\end_inset
+
+using CN in time, first-order upwind in space and Gauss's divergence theorem
+ on an unstructured grid:
+\begin_inset Formula 
+\begin{eqnarray}
+\Psi^{d} & = & \Psi^{n}-\frac{(1-\alpha)\Delta t}{V}\sum_{\text{faces}}(\mathbf{u}\cdot\mathbf{S})\Psi_{\text{up}}^{n}-\frac{\alpha\Delta t}{V}\sum_{\text{faces}}(\mathbf{u}\cdot\mathbf{S})\Psi_{\text{up}}^{d}
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ is the outward pointing normal to the face with magnitude the area of the
+ face, 
+\begin_inset Formula $V$
+\end_inset
+
+ is the cell volume, 
+\begin_inset Formula $\Psi_{\text{up}}$
+\end_inset
+
+ is the value of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ on the upwind side of the face and 
+\begin_inset Formula $\Psi_{N}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ in the neighbour cell on the other side of the face in particular.
+ The MPDATA anti-diffusive flux is:
+\begin_inset Formula 
+\begin{equation}
+vS=\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}-\left(1-2\alpha\right)\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\right\} 
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $S=|\mathbf{S}|$
+\end_inset
+
+, 
+\begin_inset Formula $\Delta x$
+\end_inset
+
+ is the cell centre to cell centre distance across the face, 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ interpolated from cell centres onto the face, 
+\begin_inset Formula $\nabla_{n}\Psi$
+\end_inset
+
+ is the gradient of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ normal to the face and 
+\begin_inset Formula $\nabla\Psi$
+\end_inset
+
+ is the whole gradient of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the face.
+ Note we will have to take care how to avoid the divide by zero when 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is zero.
+\end_layout
+
+\begin_layout Standard
+\noindent
+The anti-diffusive flux can be applied with first-order upwind, explicit
+ time stepping so it is positive definite as long as 
+\begin_inset Formula $vS$
+\end_inset
+
+ obeys a Courant number restriction:
+\begin_inset Formula 
+\begin{equation}
+\frac{\Delta t}{V}\sum_{\text{faces}}|vS|\le1\label{eq:impCorr}
+\end{equation}
+
+\end_inset
+
+for all cells.
+ For now, I am using the constraint
+\begin_inset Formula 
+\begin{gather*}
+\frac{\Delta t}{V}|vS|\le\frac{1}{\text{number of neighbours}}=\frac{1}{4}.
+\end{gather*}
+
+\end_inset
+
+This constraint can be obeyed by adding to the denominator of 
+\begin_inset Formula $vS$
+\end_inset
+
+ which also removes the divide by zero:
+\begin_inset Formula 
+\begin{gather*}
+\frac{\Delta t}{V}|vS|\le\frac{1}{4}\\
+\impliedby\frac{\Delta t}{S\Delta x}\frac{1}{2\Psi_{f}}\Biggl|\Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi-\left(1-2\alpha\right)\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\Biggr|\le\frac{1}{4}\\
+\iff\Psi_{f}\ge\frac{4}{2}\frac{\Delta t}{S}\Biggl||\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi-\left(1-2\alpha\right)\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\Biggr|
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Off Centering
+\end_layout
+
+\begin_layout Standard
+For monotonicity we need 
+\begin_inset Formula 
+\begin{eqnarray*}
+c & \le & \frac{1}{1-\alpha}\\
+\iff\alpha & \ge & 1-\frac{1}{c}\\
+\text{so set }\alpha & = & \begin{cases}
+\frac{1}{2} & c\le2\\
+1-\frac{1}{c} & \text{otherwise}
+\end{cases}\\
+\text{or }\alpha & = & \max\left(1-\frac{1}{c},\ \frac{1}{2}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Stability Analysis
+\end_layout
+
+\begin_layout Standard
+We want the two stages to have amplification factor less than one.
+ In one dimension for uniform wind and Courant number 
+\begin_inset Formula $c=u\Delta t/\Delta x$
+\end_inset
+
+ 
+\begin_inset Formula $V=v\Delta t/\Delta x$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{j}^{d} & = & \Psi_{j}^{n}-\alpha c\left(\Psi_{j}^{d}-\Psi_{j-1}^{d}\right)-\left(1-\alpha\right)c\left(\Psi_{j}^{n}-\Psi_{j-1}^{n}\right)\\
+\alpha & = & \max\left(1-\frac{1}{c},\ 0\right).\ \text{For }c<1,\text{}c=\frac{1}{1-\alpha}\\
+V_{j+1/2} & = & c\frac{\Psi_{j}^{d}-\Psi_{j-1}^{d}}{\Psi_{j}^{d}+\Psi_{j-1}^{d}}\left\{ 1-c\max\left(1-2\alpha,0\right)\right\} \\
+\Psi_{j}^{n+1} & = & \Psi_{j}^{d}-\left(V_{j+1/2}\Psi_{j}^{d}-V_{j-1/2}\Psi_{j-1}^{d}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Amplification factor for the first stage:
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{1} & = & 1-\alpha cA_{1}\left(1-e^{-ik\Delta x}\right)-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)\\
+\implies & A_{1} & \left(1+\alpha c\left(1-\cos k\Delta x+i\sin k\Delta x\right)\right)=1-\left(1-\alpha\right)c\left(1-\cos k\Delta x+i\sin k\Delta x\right)\\
+\implies A_{1} & = & \frac{1-\left(1-\alpha\right)c\left(1-\cos k\Delta x+i\sin k\Delta x\right)}{1+\alpha c\left(1-\cos k\Delta x+i\sin k\Delta x\right)}\\
+\implies A_{1} & = & \frac{1-\left(1-\alpha\right)c\left(1-\cos k\Delta x\right)-i\left(1-\alpha\right)c\sin k\Delta x}{1+\alpha c\left(1-\cos k\Delta x\right)+i\alpha c\sin k\Delta x}\\
+\implies||A_{1}||^{2} & = & \frac{\left[1-\left(1-\alpha\right)c\left(1-\cos k\Delta x\right)\right]^{2}+\left[\left(1-\alpha\right)c\sin k\Delta x\right]^{2}}{\left[1+\alpha c\left(1-\cos k\Delta x\right)\right]^{2}+\left[\alpha c\sin k\Delta x\right]^{2}}\\
+\text{Assume }c<1 & \implies & \left(1-\alpha\right)c=1,\ \alpha c=c-1\\
+\implies||A_{1}||^{2} & = & \frac{\cos^{2}k\Delta x+\sin^{2}k\Delta x}{\left[1+\left(c-1\right)\left(1-\cos k\Delta x\right)\right]^{2}+\left[\left(c-1\right)\sin k\Delta x\right]^{2}}\\
+\implies||A_{1}||^{2} & = & \frac{1}{1+2\left(c-1\right)\left(1-\cos k\Delta x\right)+\left(c-1\right)^{2}\left(1-2\cos k\Delta x+\cos^{2}k\Delta x\right)+\left(c-1\right)^{2}\sin^{2}k\Delta x}\\
+\implies||A_{1}||^{2} & = & \frac{1}{1+2c\left(c-1\right)\left(1-\cos k\Delta x\right)}\le1
+\end{eqnarray*}
+
+\end_inset
+
+Worst case for final stage, 
+\begin_inset Formula $V_{j+1/2}=-V_{j-1/2}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $A_{2}$
+\end_inset
+
+ is the amplification factor for the second stage, we want 
+\begin_inset Formula $||A_{1}A_{2}||^{2}\le1$
+\end_inset
+
+.
+ 
+\begin_inset Formula $A_{2}$
+\end_inset
+
+ is given by
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{2} & = & 1+|V|\left(1+e^{-ik\Delta x}\right)\\
+ & = & 1+|V|\left(1+\cos k\Delta x-i\sin k\Delta x\right)\\
+\implies||A_{2}||^{2} & = & \left[1+|V|\left(1+\cos k\Delta x\right)\right]^{2}+|V|^{2}\sin^{2}k\Delta x\\
+ & = & 1+2|V|\left(1+\cos k\Delta x\right)+2|V|^{2}\left(1+1\cos k\Delta x\right)\\
+ & = & 1+2|V|\left(1+|V|\right)\left(1+\cos k\Delta x\right)
+\end{eqnarray*}
+
+\end_inset
+
+So for stability we need
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{1+2|V|\left(1+|V|\right)\left(1+\cos k\Delta x\right)}{1+2c\left(c-1\right)\left(1-\cos k\Delta x\right)} & \le & 1\\
+\iff|V|\left(1+|V|\right)\left(1+\cos k\Delta x\right) & \le & c\left(c-1\right)\left(1-\cos k\Delta x\right).\\
+\impliedby2|V|\left(1+|V|\right) & \le & 0\\
+\impliedby|V| & \le & 0
+\end{eqnarray*}
+
+\end_inset
+
+Grid-scale oscillations have 
+\begin_inset Formula $\cos k\Delta x=-1$
+\end_inset
+
+.
+ But the worst case might be when 
+\begin_inset Formula $\cos k\Delta x=0$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\cos k\Delta x=1$
+\end_inset
+
+ should be fine.
+ Considering 
+\begin_inset Formula $\cos k\Delta x=0$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{1+2|V|\left(1+|V|\right)}{1+2c\left(c-1\right)} & \le & 1\\
+\iff|V|\left(1+|V|\right) & \le & c\left(c-1\right)\\
+|V|^{2}+|V|-c\left(c-1\right) & \le & 0\\
+\iff|V| & \le & \frac{-1+\sqrt{1+4c(c-1)}}{2}.
+\end{eqnarray*}
+
+\end_inset
+
+Write this in terms of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+c & = & \frac{1}{1-\alpha}\\
+\implies|V| & \le & -\frac{1}{2}+\frac{1}{2}\sqrt{1+4\frac{1}{1-\alpha}\left(\frac{1}{1-\alpha}-1\right)}\\
+ & \le & -\frac{1}{2}+\frac{1+\alpha}{2\left(1-\alpha\right)}\\
+ & \le & \frac{\alpha}{1-\alpha}\\
+\implies|v|S & \le & \frac{\alpha}{1-\alpha}S\frac{\Delta x}{\Delta t}.
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula 
+\begin{eqnarray*}
+vS & = & \frac{\Delta x}{2\Psi_{f}}\left\{ |\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}-\left(1-2\alpha\right)\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\right\} \\
+\text{then }\frac{\alpha}{1-\alpha}S\frac{\Delta x}{\Delta t} & \ge & \frac{\Delta x}{2\Psi_{f}}\biggl||\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}-\left(1-2\alpha\right)\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\biggr|\\
+\iff\Psi_{f} & \ge & \frac{(1-\alpha)}{\alpha}\frac{\Delta t}{2S}\biggl||\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}-\left(1-2\alpha\right)\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\biggr|
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Limiting the Correction for Large Courant number
+\series medium
+\size normal
+ 17 May 2021
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $c>1$
+\end_inset
+
+ we want to correct the error as if the resolution were coarser and the
+ Courant number were 1.
+ For the resolution that we have, the corrective flux is
+\begin_inset Formula 
+\begin{equation}
+vS=\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}+\left(2\alpha-1\right)\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\right\} .
+\end{equation}
+
+\end_inset
+
+This leads to an error that is proportional to 
+\begin_inset Formula $\Delta x^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta t^{2}$
+\end_inset
+
+.
+ If instead we want a larger error that is proportional to 
+\begin_inset Formula $\Delta x_{1}^{2}$
+\end_inset
+
+ where 
+\begin_inset Formula 
+\[
+\frac{u\Delta t}{\Delta x_{1}}=1,\ \frac{u\Delta t}{\Delta x}=c>1.
+\]
+
+\end_inset
+
+So multiply the correction vector by 
+\begin_inset Formula 
+\[
+\frac{\Delta x^{2}}{\Delta x_{1}^{2}}=\frac{1}{c^{2}}\ \text{or}\ \min\left\{ \frac{1}{c^{2}},\ 1\right\} .
+\]
+
+\end_inset
+
+Is this correct? If the true solution at 
+\begin_inset Formula $n+1$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi^{t}$
+\end_inset
+
+ and the numerical solution for 
+\begin_inset Formula $\Delta x$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi^{n+1}$
+\end_inset
+
+ with error 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+  and the numerical solution for 
+\begin_inset Formula $\Delta x_{1}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi^{1}$
+\end_inset
+
+ with error 
+\begin_inset Formula $\varepsilon^{1}$
+\end_inset
+
+ then
+\begin_inset Formula 
+\begin{eqnarray*}
+\varepsilon & = & A\Delta x^{2}\\
+ & = & \Psi^{i}-\Psi^{t}\\
+ & = & \Psi^{n}-\Delta t\nabla\cdot\left(\left(\mathbf{u}+v\right)\Psi\right)-\Psi^{t}\\
+\text{while }B\Delta x & = & \Psi^{n}-\Delta t\nabla\cdot\left(\mathbf{u}\Psi\right)-\Psi^{t}\\
+\implies A\Delta x^{2} & = & B\Delta x-\Delta t\nabla\cdot\left(v\Psi\right)\\
+\implies\nabla\cdot\left(v\Psi\right) & = & C\frac{\Delta x^{2}}{\Delta t}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula 
+\begin{eqnarray*}
+\alpha=\max\left(1-\frac{1}{c},\ 0\right). & \text{For } & c<1,\ c=\frac{1}{1-\alpha}\\
+\implies\min\left\{ \frac{1}{c^{2}},\ 1\right\}  & = & \left(1-\alpha\right)^{2}
+\end{eqnarray*}
+
+\end_inset
+
+So for boundedness with the limited flux
+\begin_inset Formula 
+\begin{eqnarray*}
+\iff\Psi_{f} & \ge & \left(1-\alpha\right)^{2}\frac{4}{2}\frac{\Delta t}{S}\Biggl||\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi-\left(1-2\alpha\right)\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\Biggr|\\
+\text{and }vS & = & \frac{\left(1-\alpha\right)^{2}}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}-\left(1-2\alpha\right)\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\right\} 
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,957 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+MPDATA
+\end_layout
+
+\begin_layout Subsection*
+\noindent
+
+\size larger
+MPDATA from Christian's code
+\end_layout
+
+\begin_layout Standard
+MPDATA Python code to solve
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial Q}{\partial t}+a\frac{\partial Q}{\partial x}=0
+\end{equation}
+
+\end_inset
+
+assuming 
+\begin_inset Formula $a$
+\end_inset
+
+ is uniform:
+\begin_inset Formula 
+\begin{eqnarray}
+f_{j+1/2} & = & \frac{a}{2}\left\{ Q_{j+1}+Q_{j}\right\} -\frac{|a|}{2}\left\{ Q_{j+1}-Q_{j}\right\} \\
+Q_{j}^{\prime} & = & Q_{j}^{n}-\Delta t\frac{f_{j+1/2}-f_{j-1/2}}{\Delta x}\\
+v_{j+1/2} & = & \left(|a|-a^{2}\frac{\Delta t}{\Delta x}\right)\frac{Q_{j+1}^{\prime}-Q_{j}^{\prime}}{Q_{j+1}^{\prime}+Q_{j}^{\prime}+\varepsilon}\\
+f_{j+1/2} & = & \frac{v_{j+1/2}}{2}\left\{ Q_{j+1}^{\prime}+Q_{j}^{\prime}\right\} -\frac{|v_{j+1/2}|}{2}\left\{ Q_{j+1}^{\prime}-Q_{j}^{\prime}\right\} \\
+Q_{j}^{n+1} & = & Q_{j}^{\prime}-\Delta t\frac{f_{j+1/2}-f_{j-1/2}}{\Delta x}
+\end{eqnarray}
+
+\end_inset
+
+The ante-diffusive flux can be calculated in OpenFOAM as:
+\begin_inset Formula 
+\begin{equation}
+v|\mathbf{S}_{f}|=\left(\left|\phi\right|\Delta x-\phi^{2}\frac{\Delta t}{|\mathbf{S}_{f}|}\right)\frac{\nabla_{f}Q}{2Q_{f}}
+\end{equation}
+
+\end_inset
+
+where the flux 
+\begin_inset Formula $\phi=\mathbf{u}\cdot\mathbf{S}_{f}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbf{S}_{f}$
+\end_inset
+
+ is the face area normal vector, 
+\begin_inset Formula $\nabla_{f}Q$
+\end_inset
+
+ is the gradient of 
+\begin_inset Formula $Q$
+\end_inset
+
+ in the direction 
+\begin_inset Formula $\mathbf{S}_{f}$
+\end_inset
+
+ and 
+\begin_inset Formula $Q_{f}$
+\end_inset
+
+ is 
+\begin_inset Formula $Q$
+\end_inset
+
+ interpolated onto the face.
+ 
+\end_layout
+
+\begin_layout Subsection*
+MPDATA from 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SM98"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For solving the linear advection equation
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-\frac{\partial}{\partial x}\left(u\Psi\right)
+\end{equation}
+
+\end_inset
+
+First donor cell (or upstream):
+\begin_inset Formula 
+\begin{equation}
+\Psi_{i}^{n+1}=\Psi_{i}^{n}-\left[F\left(\Psi_{i}^{n},\Psi_{i+1}^{n},U_{i+1/2}\right)-F\left(\Psi_{i-1}^{n},\Psi_{i}^{n},U_{i-1/2}\right)\right]
+\end{equation}
+
+\end_inset
+
+where flux function 
+\begin_inset Formula $F$
+\end_inset
+
+ is defined in terms of the local Courant number, 
+\begin_inset Formula $U=u\Delta t/\Delta x$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+F\left(\Psi_{L},\Psi_{R},U\right)=\left[U\right]^{+}\Psi_{L}+\left[U\right]^{-}\Psi_{R}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\left[U\right]^{+}=0.5\left(U+|U|\right),\ \left[U\right]^{-}=0.5\left(U-|U|\right).
+\end{equation}
+
+\end_inset
+
+Considering only 
+\begin_inset Formula $U>0$
+\end_inset
+
+, let us assume that the numerical scheme FTBS
+\begin_inset Formula 
+\begin{equation}
+\frac{\Psi_{i}^{n+1}-\Psi_{i}^{n}}{\Delta t}=-u\frac{\Psi_{i}^{n}-\Psi_{i-1}^{n}}{\Delta x}
+\end{equation}
+
+\end_inset
+
+is a second order approximation to
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-u\frac{\partial\Psi}{\partial x}+K\frac{\partial^{2}\Psi}{\partial x^{2}}
+\end{equation}
+
+\end_inset
+
+at time 
+\begin_inset Formula $n+1/2$
+\end_inset
+
+, location 
+\begin_inset Formula $i$
+\end_inset
+
+ which will be the same as time 
+\begin_inset Formula $n$
+\end_inset
+
+ location 
+\begin_inset Formula $j=i-U/2$
+\end_inset
+
+.
+ So we examine Taylor series about time 
+\begin_inset Formula $n$
+\end_inset
+
+ at location 
+\begin_inset Formula $x_{j}=x_{i}-\frac{1}{2}u\Delta t$
+\end_inset
+
+.
+ Location 
+\begin_inset Formula $x_{i}-\frac{1}{2}u\Delta t$
+\end_inset
+
+ is a distance 
+\begin_inset Formula $-\frac{1}{2}u\Delta t$
+\end_inset
+
+ from point 
+\begin_inset Formula $i$
+\end_inset
+
+ and a distance 
+\begin_inset Formula $\Delta x-\frac{1}{2}u\Delta t$
+\end_inset
+
+ from point 
+\begin_inset Formula $i-1$
+\end_inset
+
+.
+ The Taylor series about 
+\begin_inset Formula $j$
+\end_inset
+
+, time 
+\begin_inset Formula $n$
+\end_inset
+
+ are:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{i-1} & \approx & \Psi_{j}-\left(\Delta x-\frac{1}{2}u\Delta t\right)\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\Delta x-\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\Psi_{i} & \approx & \Psi_{j}+\frac{1}{2}u\Delta t\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\Psi_{i}-\Psi_{i-1}}{\Delta x} & \approx & \frac{\partial\Psi_{j}}{\partial x}-\frac{\Delta x-u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore FTBS is a better approximation to
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+u\frac{\Delta x-u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)\\
+\text{where }K & = & u\frac{\Delta x-u\Delta t}{2}=\frac{\Delta x^{2}}{2\Delta t}U\left(1-U\right)
+\end{eqnarray}
+
+\end_inset
+
+So the term 
+\begin_inset Formula $\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)$
+\end_inset
+
+ is an error which we need to write as
+\begin_inset Formula 
+\begin{eqnarray}
+e & = & \frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)=\frac{\partial}{\partial x}\left(v\Psi\right)\\
+\implies K\frac{\partial\Psi}{\partial x} & = & v\Psi\\
+\implies v & = & \frac{\Delta x^{2}}{2\Delta t}U\left(1-U\right)\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}.
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Formula $v_{i+1/2}$
+\end_inset
+
+ is discretised using centred differences:
+\begin_inset Formula 
+\begin{eqnarray}
+v_{i+1/2} & = & \frac{\Delta x^{2}}{2\Delta t}U\left(1-U\right)\frac{2}{\Psi_{i+1}+\Psi_{i}}\frac{\Psi_{i+1}-\Psi_{i}}{\Delta x}\\
+\implies\frac{\Delta t}{\Delta x}v_{i+1/2} & = & U\left(1-U\right)\frac{\Psi_{i+1}-\Psi_{i}}{\Psi_{i+1}+\Psi_{i}}.
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Considering 
+\begin_inset Formula $U<0$
+\end_inset
+
+ we need FTFS:
+\begin_inset Formula 
+\begin{equation}
+\frac{\Psi_{i}^{n+1}-\Psi_{i}^{n}}{\Delta t}=-u\frac{\Psi_{i+1}^{n}-\Psi_{i}^{n}}{\Delta x}
+\end{equation}
+
+\end_inset
+
+which is a second order approximation to
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-u\frac{\partial\Psi}{\partial x}+K\frac{\partial^{2}\Psi}{\partial x^{2}}
+\end{equation}
+
+\end_inset
+
+at time 
+\begin_inset Formula $n+1/2$
+\end_inset
+
+, location 
+\begin_inset Formula $i$
+\end_inset
+
+ which will be the same as time 
+\begin_inset Formula $n$
+\end_inset
+
+ location 
+\begin_inset Formula $j=i-U/2$
+\end_inset
+
+.
+ So we examine Taylor series about time 
+\begin_inset Formula $n$
+\end_inset
+
+ at location 
+\begin_inset Formula $x_{j}=x_{i}-\frac{1}{2}u\Delta t$
+\end_inset
+
+ where 
+\begin_inset Formula $u<0$
+\end_inset
+
+.
+ Location 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is a distance 
+\begin_inset Formula $\frac{1}{2}u\Delta t$
+\end_inset
+
+ from 
+\begin_inset Formula $x_{i}-\frac{1}{2}u\Delta t$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{i+1}$
+\end_inset
+
+ is a distance 
+\begin_inset Formula $\Delta x+\frac{1}{2}u\Delta t$
+\end_inset
+
+ from 
+\begin_inset Formula $x_{i}-\frac{1}{2}u\Delta t$
+\end_inset
+
+.
+ The Taylor series about 
+\begin_inset Formula $j$
+\end_inset
+
+, time 
+\begin_inset Formula $n$
+\end_inset
+
+ are:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{i+1} & \approx & \Psi_{j}+\left(\Delta x+\frac{1}{2}u\Delta t\right)\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\Delta x+\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\Psi_{i} & \approx & \Psi_{j}+\frac{1}{2}u\Delta t\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\Psi_{i+1}-\Psi_{i}}{\Delta x} & \approx & \frac{\partial\Psi_{j}}{\partial x}+\frac{\Delta x+u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore FTFS is a better approximation to
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}-u\frac{\Delta x+u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)\\
+\text{where }K & = & -u\frac{\Delta x+u\Delta t}{2}=-\frac{\Delta x^{2}}{2\Delta t}U\left(1+U\right)
+\end{eqnarray}
+
+\end_inset
+
+So the term 
+\begin_inset Formula $\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)$
+\end_inset
+
+ is an error which we need to write as
+\begin_inset Formula 
+\begin{eqnarray}
+e & = & -\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)=-\frac{\partial}{\partial x}\left(v\Psi\right)\\
+\implies K\frac{\partial\Psi}{\partial x} & = & -v\Psi\\
+\implies v & = & -\frac{\Delta x^{2}}{2\Delta t}U\left(1+U\right)\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}.
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+To summarise, for forward in time:
+\series default
+
+\begin_inset Formula 
+\begin{equation}
+v=\frac{1}{2}\left(|u|\Delta x-u^{2}\Delta t\right)\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Implicit Version
+\end_layout
+
+\begin_layout Standard
+If instead we use BTBS
+\begin_inset Formula 
+\begin{equation}
+\frac{\Psi_{i}^{n+1}-\Psi_{i}^{n}}{\Delta t}=-u\frac{\Psi_{i}^{n+1}-\Psi_{i-1}^{n+1}}{\Delta x}
+\end{equation}
+
+\end_inset
+
+at time 
+\begin_inset Formula $n+1/2$
+\end_inset
+
+, location 
+\begin_inset Formula $i$
+\end_inset
+
+ which will be the same as time 
+\begin_inset Formula $n+1$
+\end_inset
+
+ location 
+\begin_inset Formula $j=i+U/2$
+\end_inset
+
+.
+ So we examine Taylor series about time 
+\begin_inset Formula $n+1$
+\end_inset
+
+ at location 
+\begin_inset Formula $x_{j}=x_{i}+\frac{1}{2}u\Delta t$
+\end_inset
+
+.
+ Location 
+\begin_inset Formula $x_{i}+\frac{1}{2}u\Delta t$
+\end_inset
+
+ is a distance 
+\begin_inset Formula $\frac{1}{2}u\Delta t$
+\end_inset
+
+ from point 
+\begin_inset Formula $i$
+\end_inset
+
+ and a distance 
+\begin_inset Formula $\Delta x+\frac{1}{2}u\Delta t$
+\end_inset
+
+ from point 
+\begin_inset Formula $i-1$
+\end_inset
+
+.
+ The Taylor series about 
+\begin_inset Formula $j$
+\end_inset
+
+, time 
+\begin_inset Formula $n+1$
+\end_inset
+
+ are:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{i-1} & \approx & \Psi_{j}-\left(\Delta x+\frac{1}{2}u\Delta t\right)\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\Delta x+\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\Psi_{i} & \approx & \Psi_{j}-\frac{1}{2}u\Delta t\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\Psi_{i}-\Psi_{i-1}}{\Delta x} & \approx & \frac{\partial\Psi_{j}}{\partial x}-\frac{\Delta x+u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore BTBS is a better approximation to
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+u\frac{\Delta x+u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)\\
+\text{where }K & = & u\frac{\Delta x+u\Delta t}{2}=\frac{\Delta x^{2}}{2\Delta t}U\left(1+U\right).
+\end{eqnarray}
+
+\end_inset
+
+So the term 
+\begin_inset Formula $\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)$
+\end_inset
+
+ is an error which we need to write as
+\begin_inset Formula 
+\begin{eqnarray}
+e & = & \frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)=\frac{\partial}{\partial x}\left(v\Psi\right)\\
+\implies K\frac{\partial\Psi}{\partial x} & = & v\Psi\\
+\implies v & = & \frac{\Delta x^{2}}{2\Delta t}U\left(1+U\right)\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}.
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Formula $v_{i+1/2}$
+\end_inset
+
+ is discretised using centred differences:
+\begin_inset Formula 
+\begin{eqnarray}
+v_{i+1/2} & = & \frac{\Delta x^{2}}{2\Delta t}U\left(1+U\right)\frac{2}{\Psi_{i+1}+\Psi_{i}}\frac{\Psi_{i+1}-\Psi_{i}}{\Delta x}\\
+\implies\frac{\Delta t}{\Delta x}v_{i+1/2} & = & U\left(1+U\right)\frac{\Psi_{i+1}-\Psi_{i}}{\Psi_{i+1}+\Psi_{i}}.
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+For BTFS with 
+\begin_inset Formula $U<0$
+\end_inset
+
+:
+\series default
+
+\begin_inset Formula 
+\begin{equation}
+\frac{\Psi_{i}^{n+1}-\Psi_{i}^{n}}{\Delta t}=-u\frac{\Psi_{i+1}^{n+1}-\Psi_{i}^{n+1}}{\Delta x}
+\end{equation}
+
+\end_inset
+
+which is a second order approximation to
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-u\frac{\partial\Psi}{\partial x}+K\frac{\partial^{2}\Psi}{\partial x^{2}}
+\end{equation}
+
+\end_inset
+
+at time 
+\begin_inset Formula $n+1/2$
+\end_inset
+
+, location 
+\begin_inset Formula $i$
+\end_inset
+
+ which will be the same as time 
+\begin_inset Formula $n+1$
+\end_inset
+
+ at location 
+\begin_inset Formula $j=i+U/2$
+\end_inset
+
+.
+ So we examine Taylor series about time 
+\begin_inset Formula $n+1$
+\end_inset
+
+ at location 
+\begin_inset Formula $x_{j}=x_{i}+\frac{1}{2}u\Delta t$
+\end_inset
+
+ where 
+\begin_inset Formula $u<0$
+\end_inset
+
+.
+ Location 
+\begin_inset Formula $x_{i}+\frac{1}{2}u\Delta t$
+\end_inset
+
+ is a distance 
+\begin_inset Formula $\frac{1}{2}u\Delta t$
+\end_inset
+
+ from point 
+\begin_inset Formula $i$
+\end_inset
+
+ and a distance 
+\begin_inset Formula $\Delta x-\frac{1}{2}u\Delta t$
+\end_inset
+
+ from point 
+\begin_inset Formula $i+1$
+\end_inset
+
+.
+ The Taylor series about 
+\begin_inset Formula $j$
+\end_inset
+
+, time 
+\begin_inset Formula $n+1$
+\end_inset
+
+ are:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{i+1} & \approx & \Psi_{j}+\left(\Delta x-\frac{1}{2}u\Delta t\right)\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\Delta x-\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\Psi_{i} & \approx & \Psi_{j}+\frac{1}{2}u\Delta t\frac{\partial\Psi_{j}}{\partial x}+\frac{\left(\frac{1}{2}u\Delta t\right)^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\Psi_{i+1}-\Psi_{i}}{\Delta x} & \approx & \frac{\partial\Psi_{j}}{\partial x}+\frac{\Delta x-u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore BTFS is a better approximation to
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}-u\frac{\Delta x-u\Delta t}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)\\
+\text{where }K & = & -u\frac{\Delta x-u\Delta t}{2}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+To summarise, for backward in time:
+\series default
+
+\begin_inset Formula 
+\begin{equation}
+v=\frac{1}{2}\left(|u|\Delta x+u^{2}\Delta t\right)\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Crank-Nicolson Implicit Version
+\end_layout
+
+\begin_layout Standard
+If we start from Crank-Nicolson in time, backward in space (CNBS):
+\begin_inset Formula 
+\begin{equation}
+\frac{\Psi_{i}^{n+1}-\Psi_{i}^{n}}{\Delta t}=-\frac{u}{2}\left\{ \frac{\Psi_{i}^{n}-\Psi_{i-1}^{n}}{\Delta x}+\frac{\Psi_{i}^{n+1}-\Psi_{i-1}^{n+1}}{\Delta x}\right\} 
+\end{equation}
+
+\end_inset
+
+then the Taylor series expansions are about time 
+\begin_inset Formula $n+1/2$
+\end_inset
+
+, point 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{i-1} & \approx & \Psi_{i}-\Delta x\frac{\partial\Psi_{i}}{\partial x}+\frac{\Delta x^{2}}{2!}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\Psi_{i}-\Psi_{i-1}}{\Delta x} & \approx & \frac{\partial\Psi_{i}}{\partial x}-\frac{\Delta x}{2}\frac{\partial^{2}\Psi_{i}}{\partial x^{2}}.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore CNBS is a better approximation to
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+u\frac{\Delta x}{2}\frac{\partial^{2}\Psi_{j}}{\partial x^{2}}\\
+\implies\frac{\partial\Psi}{\partial t} & = & -u\frac{\partial\Psi}{\partial x}+u\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)\\
+\text{where }K & = & u\frac{\Delta x}{2}=\frac{\Delta x^{2}}{2\Delta t}U.
+\end{eqnarray}
+
+\end_inset
+
+So the term 
+\begin_inset Formula $\frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)$
+\end_inset
+
+ is an error which we need to write as
+\begin_inset Formula 
+\begin{eqnarray}
+e & = & \frac{\partial}{\partial x}\left(K\frac{\partial\Psi}{\partial x}\right)=\frac{\partial}{\partial x}\left(v\Psi\right)\\
+\implies K\frac{\partial\Psi}{\partial x} & = & v\Psi\\
+\implies v & = & \frac{\Delta x^{2}}{2\Delta t}U\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}.
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For upwind in either direction, 
+\begin_inset Formula 
+\begin{equation}
+v=\frac{|u|\Delta x}{2}\frac{1}{\Psi}\frac{\partial\Psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+MPDATA for an unstructured grid from 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SS05"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To solve 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-\nabla\cdot\left(\mathbf{v}\Psi\right)
+\end{equation}
+
+\end_inset
+
+using Gauss's divergence theorem on an unstructured grid:
+\begin_inset Formula 
+\begin{equation}
+\Psi_{i}^{n+1}=\Psi_{i}^{n}-\frac{\Delta t}{V_{i}}\sum_{j=1}^{\ell(i)}F_{j}^{\perp}S_{j}.
+\end{equation}
+
+\end_inset
+
+The upwind flux is
+\begin_inset Formula 
+\begin{equation}
+F_{j}^{\perp}=[v_{j}^{\perp}]^{+}\Psi_{i}^{n}+[v_{j}^{\perp}]^{-}\Psi_{j}^{n},\;[v]^{+}=0.5(v+|v|),\negthickspace[v]^{-}=0.5(v-|v|)
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $v^{\perp}=\mathbf{v}\cdot\mathbf{n}$
+\end_inset
+
+ is evaluated at the face 
+\begin_inset Formula $S_{j}$
+\end_inset
+
+.
+ The anti-diffusive flux is
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{v}_{j}^{\perp} & = & \frac{|v_{j}^{\perp}|}{2}\left(\frac{1}{\Psi}\frac{\partial\Psi}{\partial r}\right)\bigg|_{s_{j}}^{*}\left(r_{j}-r_{i}\right)-\frac{v_{j}^{\perp}\Delta t}{2}\left(\frac{\mathbf{v}}{\Psi}\cdot\nabla\Psi\right)\bigg|_{s_{j}}^{*}\\
+ & - & \underbrace{\frac{v_{j}^{\perp}}{2}\left(\frac{1}{\Psi}\frac{\partial\Psi}{\partial r}\right)\bigg|_{s_{j}}^{*}\left(r_{i}-2r_{s_{j}}+r_{j}\right)}_{\text{for skew meshes}}-\underbrace{\frac{v_{j}^{\perp}\Delta t}{2}\left(\nabla\cdot\mathbf{v}\right)|_{s_{j}}^{*}}_{\text{for divergent velocity}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Quotes eld
+\end_inset
+
+asterisk now indicating the first-order estimate of the n + 1 solution from
+ the preceding upwind iteration
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\begin_inset Formula $s_{j}$
+\end_inset
+
+ is that the face.
+\end_layout
+
+\begin_layout Standard
+Use the diffusively advected 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ to calculate 
+\begin_inset Formula $\tilde{v}_{j}^{\perp}$
+\end_inset
+
+ and the flux from 
+\begin_inset Formula $\tilde{v}_{j}^{\perp}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+OpenFOAM Implementation
+\end_layout
+
+\begin_layout Standard
+For the explicit implementation, limit the anti-diffusive velocity so that
+ it doesn't break the Courant number restriction.
+ We want
+\begin_inset Formula 
+\begin{equation}
+\frac{\Delta t}{2V}\sum_{\text{faces}}|\phi|<1
+\end{equation}
+
+\end_inset
+
+so each anti-diffusive flux, 
+\begin_inset Formula $v|S|$
+\end_inset
+
+, can be limited to satisfy:
+\begin_inset Formula 
+\begin{equation}
+|vS|<\frac{|S|\Delta x}{\Delta t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Correction because
+\begin_inset Formula $\theta$
+\end_inset
+
+ varies in space
+\end_layout
+
+\begin_layout Standard
+An error is introduced because 
+\begin_inset Formula $\theta$
+\end_inset
+
+ varies in space:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\Psi}{\partial t} & = & -\left(1-\theta\right)\nabla\cdot\left(\mathbf{u}\Psi^{n}\right)-\theta\nabla\cdot\left(\mathbf{u}\Psi^{n+1}\right)\\
+ & = & -\nabla\cdot\left(\left(1-\theta\right)\mathbf{u}\Psi^{n}\right)-\nabla\cdot\left(\theta\mathbf{u}\Psi^{n+1}\right)+\Psi^{n}\mathbf{u}\cdot\nabla\left(1-\theta\right)+\Psi^{n+1}\mathbf{u}\cdot\nabla\theta\\
+ & = & -\nabla\cdot\left(\left(1-\theta\right)\mathbf{u}\Psi^{n}\right)-\nabla\cdot\left(\theta\mathbf{u}\Psi^{n+1}\right)+\left(\Psi^{n+1}\mathbf{u}-\Psi^{n}\mathbf{u}\right)\cdot\nabla\theta\\
+ & = & -\nabla\cdot\left(\left(1-\theta\right)\mathbf{u}\Psi^{n}\right)-\nabla\cdot\left(\theta\mathbf{u}\Psi^{n+1}\right)+\frac{\partial\Psi}{\partial t}\Delta t\mathbf{u}\cdot\nabla\theta\\
+\implies\frac{\partial\Psi}{\partial t} & = & \frac{-\nabla\cdot\left(\left(1-\theta\right)\mathbf{u}\Psi^{n}\right)-\nabla\cdot\left(\theta\mathbf{u}\Psi^{n+1}\right)}{1-\Delta t\mathbf{u}\cdot\nabla\theta}
+\end{eqnarray*}
+
+\end_inset
+
+Not helpful.
+ How about considering how the departure point varies when 
+\begin_inset Formula $\theta$
+\end_inset
+
+ varies in space.
+ For uniform 
+\begin_inset Formula $\theta$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\mathbf{x}_{d}=\mathbf{x}_{f}-\frac{1-2\theta}{2}\Delta t\mathbf{u}.
+\]
+
+\end_inset
+
+Given 
+\begin_inset Formula $\nabla_{f}\theta$
+\end_inset
+
+ at the face, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "abbrvnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

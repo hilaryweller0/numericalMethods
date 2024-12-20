@@ -1,0 +1,217 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\paragraph_spacing double
+\noindent
+\align center
+
+\size larger
+Deferred Correction as Runge-Kutta IMEX 
+\end_layout
+
+\begin_layout Standard
+The ODE
+\begin_inset Formula 
+\begin{equation}
+\frac{dy}{dt}=f(y)
+\end{equation}
+
+\end_inset
+
+is solved using a low order method which can be solved implicitly, 
+\begin_inset Formula $f_{\text{low}}$
+\end_inset
+
+, and a high order explicit correction, 
+\begin_inset Formula $f_{\text{corr}}$
+\end_inset
+
+ between time steps 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $n+1$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+y^{(0)} & = & y^{n}\nonumber \\
+\text{for }k=1,...K\nonumber \\
+y^{(k)} & = & y^{n}+\Delta t\alpha\left(f_{\text{low}}^{(k)}+f_{\text{corr}}^{(k-1)}\right)+\Delta t(1-\alpha)\left(f_{\text{low}}^{n}+f_{\text{corr}}^{n}\right)\label{eq:defCorr}\\
+y^{n+1} & = & y^{(K)}.\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+This can be written as a Runge-Kutta Implicit-Explicit (IMEX) scheme for
+ solving the ODE
+\begin_inset Formula 
+\begin{equation}
+\frac{dy}{dt}=f_{\text{low}}+f_{\text{corr}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+\text{for }k=1,...K\nonumber \\
+y^{(k)} & = & y^{n}+\Delta t\sum_{j=1}^{k-1}\tilde{a}_{kj}f_{\text{corr}}(y^{(j)},t^{n}+\tilde{c}_{j}\Delta t)+\Delta t\sum_{j=1}^{k}a_{kj}f_{\text{low}}(y^{(j)},t^{n}+c_{j}\Delta t)\label{eq:RKIMEX}\\
+y^{n+1} & = & y^{n}+\Delta t\sum_{k=1}^{K}\tilde{w}_{k}f_{\text{corr}}(y^{(k)},t^{n}+\tilde{c}_{k}\Delta t)+\Delta t\sum_{k=1}^{K}w_{k}f_{\text{low}}(y^{(k)},t^{n}+c_{k}\Delta t)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+with double Butcher tableau:
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c|c}
+\tilde{\mathsf{\mathbf{c}}} & \tilde{A}\\
+\hline  & \tilde{\mathbf{w}}^{T}
+\end{array}=\begin{array}{c|cccccc}
+\tilde{c}_{1} & 0 & 0 & \cdots & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots\\
+\tilde{c}_{j} & \tilde{a}_{j1} & \tilde{a}_{j2} & \cdots & \tilde{a}_{j\ell} & \cdots & 0\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots\\
+\tilde{c}_{\nu} & \tilde{a}_{\nu1} & \tilde{a}_{\nu2} & \cdots & \tilde{a}_{\nu\ell} & \cdots & 0\\
+\hline  & \tilde{w}_{1} & \tilde{w}_{2} & \cdots & \tilde{w}_{\ell} & \cdots & \tilde{w}_{\nu}
+\end{array},\;\begin{array}{c|c}
+\mathsf{\mathbf{c}} & A\\
+\hline  & \mathbf{w}^{T}
+\end{array}=\begin{array}{c|cccccc}
+c_{1} & a_{11} & 0 & \cdots & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots\\
+c_{j} & a_{j1} & a_{j2} & \cdots & a_{j\ell} & \cdots & 0\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots\\
+c_{\nu} & a_{\nu1} & a_{\nu2} & \cdots & a_{\nu\ell} & \cdots & a_{\nu\nu}\\
+\hline  & w_{1} & w_{2} & \cdots & w_{\ell} & \cdots & w_{\nu}
+\end{array}\label{eq:tableau}
+\end{equation}
+
+\end_inset
+
+For 
+\begin_inset Formula $K=5$
+\end_inset
+
+ the double Butcher tableau for the deferred correction scheme, (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:defCorr"
+
+\end_inset
+
+) is:
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c|c}
+\tilde{\mathsf{\mathbf{c}}} & \tilde{A}\\
+\hline  & \tilde{\mathbf{w}}^{T}
+\end{array}=\begin{array}{c|ccccc}
+0 & 0 & 0 & 0 & 0 & 0\\
+1 & 1 & 0 & 0 & 0 & 0\\
+1 & 1-\alpha & \alpha & 0 & 0 & 0\\
+1 & 1-\alpha & 0 & \alpha & 0 & 0\\
+1 & 1-\alpha & 0 & 0 & \alpha & 0\\
+\hline  & 1-\alpha & 0 & 0 & \alpha & 0
+\end{array},\;\begin{array}{c|c}
+\mathsf{\mathbf{c}} & A\\
+\hline  & \mathbf{w}^{T}
+\end{array}=\begin{array}{c|ccccc}
+0 & 0 & 0 & 0 & 0 & 0\\
+1 & 1-\alpha & \alpha & 0 & 0 & 0\\
+1 & 1-\alpha & 0 & \alpha & 0 & 0\\
+1 & 1-\alpha & 0 & 0 & \alpha & 0\\
+1 & 1-\alpha & 0 & 0 & 0 & \alpha\\
+\hline  & 1-\alpha & 0 & 0 & 0 & \alpha
+\end{array}\label{eq:defCorrTableau}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document

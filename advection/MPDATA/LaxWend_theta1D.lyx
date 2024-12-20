@@ -1,0 +1,696 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{animate}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 15cm
+\paperheight 8cm
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Lax-Wendroff with 
+\begin_inset Formula $\theta$
+\end_inset
+
+ time stepping
+\end_layout
+
+\begin_layout Date
+12 April 2022
+\end_layout
+
+\begin_layout Standard
+Consider the solution of the homogeneous, one-dimensional linear advection
+ equation
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\psi}{\partial t}+u\frac{\partial\psi}{\partial x}=0\label{eq:1dadvection}
+\end{equation}
+
+\end_inset
+
+Lax-Wendroff (explicit) in 1D is:
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{c}{2}\left(1-c\right)\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)\label{eq:LWexp}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $c=\Delta tu/\Delta x$
+\end_inset
+
+.
+ Let us write LW with 
+\begin_inset Formula $\theta$
+\end_inset
+
+ time stepping as:
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\psi_{j}^{n}-c\left(1-\theta\right)\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-c\theta\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c}{2}\left(1-\chi c\right)\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right).\label{eq:LWtheta}
+\end{equation}
+
+\end_inset
+
+For second-order accuracy, 
+\begin_inset Formula $\chi=1-2\theta$
+\end_inset
+
+ (this needs checking).
+ Based on the stability analysis below, this is stable for
+\begin_inset Formula 
+\begin{eqnarray*}
+c\le1 & \text{use} & \theta=0,\ \chi=1\\
+c\ge1 & \text{use} & \theta=1-\frac{1}{c},\ c=\frac{1}{1-\theta},\ \chi\le\frac{2c-1}{c^{2}}=\left(1-\theta^{2}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Second-Order Accuracy of Explicit Lax-Wendroff
+\end_layout
+
+\begin_layout Standard
+The scheme is
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{c}{2}\left(1-c\right)\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right).\label{eq:LW}
+\end{equation}
+
+\end_inset
+
+Evaluate 
+\begin_inset Formula $\partial\psi/\partial t$
+\end_inset
+
+ and 
+\begin_inset Formula $\partial\psi/\partial x$
+\end_inset
+
+ at time 
+\begin_inset Formula $n$
+\end_inset
+
+, position 
+\begin_inset Formula $j$
+\end_inset
+
+ using Taylor series about 
+\begin_inset Formula $\left(n,j\right)$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi}{\partial t}_{j}^{n}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{j}^{n}+O\left(\Delta t^{3}\right)\\
+\implies\frac{\partial\psi}{\partial t}_{j}^{n} & = & \frac{\psi_{j}^{n+1}-\psi_{j}^{n}}{\Delta t}-\frac{\Delta t}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{j}^{n}+O\left(\Delta t^{2}\right)\\
+\text{and }\psi_{j-1}^{n} & = & \psi_{j}^{n}-\Delta x\frac{\partial\psi}{\partial x}_{j}^{n}+\frac{\Delta x^{2}}{2!}\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n}+O\left(\Delta x^{3}\right)\\
+\implies\frac{\partial\psi}{\partial x}_{j}^{n} & = & \frac{\psi_{j}^{n}-\psi_{j-1}^{n}}{\Delta x}+\frac{\Delta x}{2!}\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n}+O\left(\Delta x^{2}\right)\label{eq:ddx}
+\end{eqnarray}
+
+\end_inset
+
+Use (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1dadvection"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) to replace 
+\begin_inset Formula $\partial^{2}\psi/\partial t^{2}$
+\end_inset
+
+ with 
+\begin_inset Formula $\partial^{2}\psi/\partial x^{2}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial^{2}\psi}{\partial t^{2}} & = & \frac{\partial}{\partial t}\left(\frac{\partial\psi}{\partial t}\right)=\frac{\partial}{\partial t}\left(-u\frac{\partial\psi}{\partial x}\right)=-u\frac{\partial}{\partial x}\left(\frac{\partial\psi}{\partial t}\right)=u^{2}\frac{\partial^{2}\psi}{\partial x^{2}}\\
+\implies\frac{\partial\psi}{\partial t}_{j}^{n} & = & \frac{\psi_{j}^{n+1}-\psi_{j}^{n}}{\Delta t}-\frac{\Delta t}{2!}u^{2}\frac{\partial^{2}\psi}{\partial u^{2}}_{j}^{n}+O\left(\Delta t^{2}\right).\label{eq:ddt}
+\end{eqnarray}
+
+\end_inset
+
+Discretise 
+\begin_inset Formula $\partial^{2}\psi/\partial x^{2}$
+\end_inset
+
+ to second-order:
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial^{2}\psi}{\partial u^{2}}_{j}^{n}=\frac{\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}}{\Delta x^{2}}+O\left(\Delta x^{2}\right).\label{eq:d2dx2}
+\end{equation}
+
+\end_inset
+
+Substitute (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ddx"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ddt"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:d2dx2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1dadvection"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\psi_{j}^{n+1}-\psi_{j}^{n}}{\Delta t} & - & \frac{\Delta t}{2!}u^{2}\frac{\partial^{2}\psi}{\partial u^{2}}_{j}^{n}+O\left(\Delta t^{2}\right)+u\left\{ \frac{\psi_{j}^{n}-\psi_{j-1}^{n}}{\Delta x}+\frac{\Delta x}{2!}\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n}+O\left(\Delta x^{2}\right)\right\} =0\\
+\implies\psi_{j}^{n+1} & = & \psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{1}{2}\left(\Delta t\Delta xu-\Delta t^{2}u^{2}\right)\frac{\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}}{\Delta x^{2}}+\Delta t\left\{ O\left(\Delta t^{2}\right)+O\left(\Delta x^{2}\right)\right\} \\
+\implies\psi_{j}^{n+1} & = & \psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{c}{2}\left(1-c\right)\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)+\Delta t\left\{ O\left(\Delta t^{2}\right)+O\left(\Delta x^{2}\right)\right\} 
+\end{eqnarray}
+
+\end_inset
+
+as required.
+\end_layout
+
+\begin_layout Subsection*
+Second-Order Accuracy of Lax-Wendroff with 
+\begin_inset Formula $\theta$
+\end_inset
+
+ time stepping
+\end_layout
+
+\begin_layout Standard
+The scheme is 
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\psi_{j}^{n}-c\left(1-\theta\right)\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-c\theta\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c}{2}\left(1-\left(1-2\theta\right)c\right)\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right).\label{eq:LWtheta-2}
+\end{equation}
+
+\end_inset
+
+Evaluate 
+\begin_inset Formula $\partial\psi/\partial t$
+\end_inset
+
+ and 
+\begin_inset Formula $\partial\psi/\partial x$
+\end_inset
+
+ at time 
+\begin_inset Formula $n+\theta$
+\end_inset
+
+, position 
+\begin_inset Formula $j$
+\end_inset
+
+ using Taylor series about 
+\begin_inset Formula $\left(n+\theta,j\right)$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n} & = & \psi_{j}^{n+\theta}-\theta\Delta t\frac{\partial\psi}{\partial t}_{j}^{n+\theta}+\frac{\theta^{2}\Delta t^{2}}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{j}^{n+\theta}+O\left(\Delta t^{3}\right)\\
+\text{and }\psi_{j}^{n+1} & = & \psi_{j}^{n+\theta}+\left(1-\theta\right)\Delta t\frac{\partial\psi}{\partial t}_{j}^{n+\theta}+\left(1-\theta\right)^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{j}^{n+\theta}+O\left(\Delta t^{3}\right)\\
+\implies\frac{\partial\psi}{\partial t}_{j}^{n+\theta} & = & \frac{\psi_{j}^{n+1}-\psi_{j}^{n}}{\Delta t}-\left(1-2\theta\right)\frac{\Delta t}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{j}^{n+\theta}+O\left(\Delta t^{2}\right)\\
+\text{and }\psi_{j-1}^{n+\theta} & = & \psi_{j}^{n+\theta}-\Delta x\frac{\partial\psi}{\partial x}_{j}^{n+\theta}+\frac{\Delta x^{2}}{2!}\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n+\theta}+O\left(\Delta x^{3}\right)\\
+\implies\frac{\partial\psi}{\partial x}_{j}^{n+\theta} & = & \frac{\psi_{j}^{n+\theta}-\psi_{j-1}^{n+\theta}}{\Delta x}+\frac{\Delta x}{2!}\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n+\theta}+O\left(\Delta x^{2}\right)\label{eq:ddx-1}
+\end{eqnarray}
+
+\end_inset
+
+Use linear interpolation in time:
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+\theta}=\left(1-\theta\right)\psi_{j}^{n}+\theta\psi_{j}^{n+1}+O\left(\Delta t\right)
+\end{equation}
+
+\end_inset
+
+Substituting into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1dadvection"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ at time 
+\begin_inset Formula $n+\theta$
+\end_inset
+
+, position 
+\begin_inset Formula $j$
+\end_inset
+
+ gives:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\psi_{j}^{n+1}-\psi_{j}^{n}}{\Delta t} & - & \left(1-2\theta\right)\frac{\Delta t}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{j}^{n+\theta}+O\left(\Delta t^{2}\right)=-u\left\{ \frac{\psi_{j}^{n+\theta}-\psi_{j-1}^{n+\theta}}{\Delta x}+\frac{\Delta x}{2!}\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n+\theta}+O\left(\Delta x^{2}\right)\right\} \\
+\implies\psi_{j}^{n+1} & = & \psi_{j}^{n}-c\left\{ \left(1-\theta\right)\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)+\theta\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)+O\left(\Delta t\right)\right\} \\
+ & - & \Delta t\left\{ u\frac{\Delta x}{2!}-u^{2}\left(1-2\theta\right)\frac{\Delta t}{2!}\right\} \left(\frac{\partial^{2}\psi}{\partial x^{2}}_{j}^{n}+O\left(\Delta t\right)\right)+\Delta t\left\{ O\left(\Delta t^{2}\right)+O\left(\Delta x^{2}\right)\right\} \\
+\implies\psi_{j}^{n+1} & = & \psi_{j}^{n}-c\left\{ \left(1-\theta\right)\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)+\theta\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)\right\} \\
+ & - & \frac{c}{2}\left\{ 1-\left(1-2\theta\right)c\right\} \left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)+O\left(\Delta t^{2}\right)+\Delta tO\left(\Delta x^{2}\right)
+\end{eqnarray*}
+
+\end_inset
+
+This isn't properly second-order in time.
+ For proper second-order, we should have
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\psi^{n+1}-\psi^{n}}{\Delta t} & = & \text{discretisation}+O\left(\Delta t^{2}\right)\\
+\implies\psi^{n+1} & = & \psi^{n}+\Delta t\times\text{discretisation}+O\left(\Delta t^{3}\right)
+\end{eqnarray*}
+
+\end_inset
+
+For 
+\begin_inset Formula $\theta=\frac{1}{2}$
+\end_inset
+
+ the problematic terms disappear.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Stability Analysis
+\end_layout
+
+\begin_layout Standard
+Von-Neumann stability analysis using the short hand 
+\begin_inset Formula $\cos=\cos k\Delta x$
+\end_inset
+
+, 
+\begin_inset Formula $\sin=\sin k\Delta x$
+\end_inset
+
+ and
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n} & = & A^{n}e^{ikj\Delta x}\\
+\implies\frac{\psi_{j}^{n}-\psi_{j-1}^{n}}{\psi_{j}^{n}} & = & 1-\cos+i\sin\\
+\text{and }\frac{\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}}{\psi_{j}^{n}} & = & -2\left(1-\cos\right)
+\end{eqnarray*}
+
+\end_inset
+
+First consider 
+\begin_inset Formula $\chi=1-2\theta$
+\end_inset
+
+ and substitute into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:LWtheta"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{eqnarray*}
+A & = & 1-c\left(1-\theta\right)\left(1-\cos+i\sin\right)-Ac\theta\left(1-\cos+i\sin\right)+c\left(1-\chi c\right)\left(1-\cos\right)\\
+\implies A & = & \frac{1-c\left(1-\theta\right)\left(1-\cos+i\sin\right)+c\left(1-\chi c\right)\left(1-\cos\right)}{1+c\theta\left(1-\cos+i\sin\right)}\\
+\implies A & = & \frac{1-c\left(1-\theta\right)\left(1-\cos\right)+c\left(1-\chi c\right)\left(1-\cos\right)-ic\left(1-\theta\right)\sin}{1+c\theta\left(1-\cos\right)+ic\theta\sin}\\
+\implies A & = & \frac{1-c\left(\chi c-\theta\right)\left(1-\cos\right)-ic\left(1-\theta\right)\sin}{1+c\theta\left(1-\cos\right)+ic\theta\sin}\\
+\implies||A||^{2} & = & \frac{\left\{ 1-c\left(\chi c-\theta\right)\left(1-\cos\right)\right\} ^{2}+c^{2}\left(1-\theta\right)^{2}\sin^{2}}{\left\{ 1+c\theta\left(1-\cos\right)\right\} ^{2}+c^{2}\theta^{2}\sin^{2}}\\
+ & = & \frac{1-c\left\{ 2\left(\chi c-\theta\right)-c\left(\chi c-\theta\right)^{2}\left(1-\cos\right)-c\left(1-\theta\right)^{2}\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\theta\left(1-\cos\right)+c^{2}\theta^{2}\left(1-\cos\right)^{2}+c^{2}\theta^{2}\sin^{2}}\\
+ & = & \frac{1-\left\{ c\left(\chi c-\theta\right)\left[2-c\left(\chi c-\theta\right)\left(1-\cos\right)\right]-c^{2}\left(1-\theta\right)^{2}\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\theta\left(1+c\theta\right)\left(1-\cos\right)}\\
+\text{Define }\Upsilon & = & c\left(\theta-\chi c\right)\\
+\implies||A||^{2} & = & \frac{1+\left\{ \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+c^{2}\left(1-\theta\right)^{2}\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\theta\left(1+c\theta\right)\left(1-\cos\right)}\\
+||A||^{2} & \le & 1\\
+\iff &  & \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+c^{2}\left(1-\theta\right)^{2}\left(1+\cos\right)\le2c\theta\left(1+c\theta\right)\\
+\iff &  & \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+c^{2}\left(1-\theta\right)^{2}\left(1+\cos\right)-2c\theta\left(1+c\theta\right)\le0
+\end{eqnarray*}
+
+\end_inset
+
+If we assume 
+\begin_inset Formula $\theta=1$
+\end_inset
+
+, 
+\begin_inset Formula $\chi=-1\implies\text{\Upsilon=c\left(c+1\right)}$
+\end_inset
+
+ this simplifies to
+\begin_inset Formula 
+\begin{eqnarray*}
+||A||^{2} & = & \frac{1+\left\{ c\left(c+1\right)\left[2+c\left(c+1\right)\left(1-\cos\right)\right]\right\} \left(1-\cos\right)}{1+2c\left(1+c\right)\left(1-\cos\right)}\le1\\
+\iff &  & c\left(c+1\right)\left(1-\cos\right)\le0\text{ which is false}.
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $\theta=1$
+\end_inset
+
+, 
+\begin_inset Formula $\chi=0$
+\end_inset
+
+ 
+\begin_inset Formula $\implies\Upsilon=c\left(\theta-\chi c\right)=c$
+\end_inset
+
+ we get
+\begin_inset Formula 
+\begin{eqnarray*}
+\implies||A||^{2} & = & \frac{1+\left\{ c\left[2+c\left(1-\cos\right)\right]\right\} \left(1-\cos\right)}{1+2c\left(1+c\right)\left(1-\cos\right)}\le1\\
+\iff &  & 2+c\left(1-\cos\right)\le2+2c\\
+\iff &  & \left(1-\cos\right)\le2\text{ which is true }\forall c.
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+, 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+ 
+\begin_inset Formula $\implies\Upsilon=-c^{2}$
+\end_inset
+
+ (explicit LW) we get
+\begin_inset Formula 
+\begin{eqnarray*}
+||A||^{2} & = & 1+\left\{ -c^{2}\left[2-c^{2}\left(1-\cos\right)\right]+c^{2}\left(1+\cos\right)\right\} \left(1-\cos\right)\\
+ & = & 1-c^{2}\left(1-c^{2}\right)\left(1-\cos\right)^{2}\\
+||A||^{2}\le1 &  & \impliedby c\in[-1,1].
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $c>1$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta=1-\frac{1}{c}$
+\end_inset
+
+ 
+\begin_inset Formula $\left(\implies c=\frac{1}{1-\theta},\ c\theta=c-1,\ c\left(1-\theta\right)=1,\ \Upsilon=c\left(\theta-\chi c\right)=c-1-\chi c^{2}\right)$
+\end_inset
+
+ and assume 
+\begin_inset Formula $\chi\ge0$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\implies||A||^{2} & = & \frac{1+\left\{ \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+ & = & \frac{1+\left\{ \left(c-1-\chi c^{2}\right)\left[2+\left(c-1-\chi c^{2}\right)\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+||A||^{2} & \le & 1\\
+\iff &  & \left(c-1-\chi c^{2}\right)\left[2+\left(c-1-\chi c^{2}\right)\left(1-\cos\right)\right]+\left(1+\cos\right)\le2c\left(c-1\right)\\
+ & \iff & \left[2c-2-2\chi c^{2}+\left(c^{2}+1+\chi^{2}c^{4}-2c+2\chi c^{2}-2\chi c^{3}\right)\left(1-\cos\right)\right]+\left(1+\cos\right)\le2c\left(c-1\right)\\
+\iff &  & 2c-2-2\chi c^{2}+\left(c-1-\chi c^{2}\right)^{2}\left(1-\cos\right)+\left(1+\cos\right)\le2c^{2}-2c\\
+\iff &  & -2\chi c^{2}+\left(c^{2}+1+\chi^{2}c^{4}-2c+2\chi c^{2}-2\chi c^{3}\right)\left(1-\cos\right)\le1-\cos+2c^{2}-4c\\
+\iff &  & c\left(c+\chi^{2}c^{3}-2+2\chi c-2\chi c^{2}\right)\left(1-\cos\right)\le2\chi c^{2}+2c^{2}-4c\\
+ &  & c+\chi^{2}c^{3}-2+2\chi c-2\chi c^{2}\le\chi c+c-2`\\
+\impliedby &  & \chi c^{2}-2c+1\le0\text{ and }\chi\ge0\\
+\impliedby &  & \chi\in\left[0,\ \frac{2c-1}{c^{2}}\right]
+\end{eqnarray*}
+
+\end_inset
+
+Check, if 
+\begin_inset Formula $\chi=0\implies\Upsilon=c\theta=c-1$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+||A||^{2} & = & \frac{1+\left\{ \left(c-1\right)\left[2+\left(c-1\right)\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+ & = & \frac{1+c\left\{ 2+\left(c-2\right)\left(1-\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\le1\\
+\iff &  & 2+\left(c-2\right)\left(1-\cos\right)\le2c-2\\
+\iff &  & \left(c-2\right)\left(1-\cos\right)\le2(c-2)\text{ which is always true}
+\end{eqnarray*}
+
+\end_inset
+
+Also check 
+\begin_inset Formula $\chi=\frac{2c-1}{c^{2}}\implies\Upsilon=c\left(\theta-\chi c\right)=-c$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+||A||^{2} & = & \frac{1+\left\{ \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+ & = & \frac{1+\left\{ -c\left[2-c\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+ & = & \frac{1+\left\{ 1+\cos-2c+c^{2}\left(1-\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\le1\\
+\iff &  & 1+\cos-2c+c^{2}\left(1-\cos\right)\le2c\left(c-1\right)\\
+\iff &  & 1+\cos+c^{2}\left(1-2-\cos\right)\le0\\
+\iff &  & \left(1+\cos\right)\left(1-c^{2}\right)\le0\text{ which is true }\forall c^{2}\ge1
+\end{eqnarray*}
+
+\end_inset
+
+Stability for 
+\begin_inset Formula $c\ge1$
+\end_inset
+
+, 
+\begin_inset Formula $\chi=1-2\theta$
+\end_inset
+
+, 
+\begin_inset Formula $\theta=1-\frac{1}{c}$
+\end_inset
+
+ 
+\begin_inset Formula $\implies c\theta=c-1$
+\end_inset
+
+, 
+\begin_inset Formula $c\left(1-\theta\right)=1$
+\end_inset
+
+, 
+\begin_inset Formula $\Upsilon=c\left(\theta-\chi c\right)=c^{2}-c-1$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+||A||^{2} & = & \frac{1+\left\{ \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+c^{2}\left(1-\theta\right)^{2}\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\theta\left(1+c\theta\right)\left(1-\cos\right)}\\
+ & = & \frac{1+\left\{ \left(c^{2}-c-1\right)\left[2+\left(c^{2}-c-1\right)\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\le1\\
+\iff &  & \left(c^{2}-c-1\right)\left[2+\left(c^{2}-c-1\right)\left(1-\cos\right)\right]+1+\cos\le1+2c^{2}-2c\\
+\iff &  & \left(c\left(c-1\right)-1\right)\left[2+\left(c\left(c-1\right)-1\right)\left(1-\cos\right)\right]+\cos\le2c\left(c-1\right)\\
+\text{Define} & d & =c\left(c-1\right)\\
+\iff &  & \left(d-1\right)\left[2+\left(d-1\right)\left(1-\cos\right)\right]+\cos\le2d\\
+ &  & \left(d-1\right)\left[1+d-d\cos+\cos\right]+\cos\le2d\\
+\iff &  & d^{2}-d^{2}\cos+d\cos-1+d\cos-\cos+\cos\le2d\\
+\iff &  & d\left(d-2\right)-d\cos\left(d-2\right)\le1\\
+\iff &  & d\left(d-2\right)\left(1-\cos\right)\le1\\
+\iff &  & c\left(c-1\right)\le2\\
+\iff &  & c^{2}-c-2\le0\\
+\iff &  & c\in\frac{1\pm\sqrt{1+8}}{2}\in\frac{1\pm3}{2}\in\left[-1,2\right]
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $c>1$
+\end_inset
+
+ and 
+\begin_inset Formula $\chi=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta=1-\frac{1}{c}$
+\end_inset
+
+ 
+\begin_inset Formula $\left(\implies c=\frac{1}{1-\theta},\ c\theta=c-1,\ c\left(1-\theta\right)=1,\ \Upsilon=c\left(\theta-\chi c\right)=c-1\right)$
+\end_inset
+
+ :
+\begin_inset Formula 
+\begin{eqnarray*}
+\implies||A||^{2} & = & \frac{1+\left\{ \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+ & = & \frac{1+\left\{ \left(c-1\right)\left[2+\left(c-1\right)\left(1-\cos\right)\right]+\left(1+\cos\right)\right\} \left(1-\cos\right)}{1+2c\left(c-1\right)\left(1-\cos\right)}\\
+||A||^{2} & \le & 1\\
+\iff &  & \left(c-1\right)\left[2+\left(c-1\right)\left(1-\cos\right)\right]+1+\cos\le2c\left(c-1\right)\\
+\iff &  & c^{2}-c^{2}\cos+2c\cos\le2c^{2}-2c\\
+\iff &  & c\left(2-c\right)+c\left(2-c\right)\cos\le0\\
+\iff &  & c\left(2-c\right)\left(1+\cos\right)\le0\\
+\iff &  & c\ge2\\
+\\
+||A||^{2} & \le & 1\\
+\iff &  & \Upsilon\left[2+\Upsilon\left(1-\cos\right)\right]+c^{2}\left(1-\theta\right)^{2}\left(1+\cos\right)-2c\theta\left(1+c\theta\right)\le0\\
+\iff &  & \left(c-1\right)\left[2+\left(c-1\right)\left(1-\cos\right)\right]+1+\cos-2c\left(c-1\right)\le0\\
+\iff &  & \left(c-1\right)\left[1+c-c\cos+\cos\right]+1+\cos-2c\left(c-1\right)\le0\\
+ &  & c^{2}-c^{2}\cos+2c\cos-2c\left(c-1\right)\le0\\
+\iff &  & c^{2}-c^{2}\cos+2c\cos-2c^{2}+2c\le0\\
+\iff &  & c\left(2-c\right)+c\left(2-c\right)\cos\le0\\
+\iff &  & c\left(2-c\right)\left(1+\cos\right)\le0\\
+\iff &  & c\ge2
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Consider the scheme with 
+\begin_inset Formula $\theta=1$
+\end_inset
+
+, 
+\begin_inset Formula $\chi=0$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\psi_{j}^{n}-c\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c}{2}\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right).\label{eq:LWtheta-1}
+\end{equation}
+
+\end_inset
+
+Is this really stable for large 
+\begin_inset Formula $c$
+\end_inset
+
+? First consider boundedness:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\frac{c}{1+c}\psi_{j-1}^{n+1}-\frac{c}{1+c}\frac{\psi_{j+1}^{n}+\psi_{j-1}^{n}}{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

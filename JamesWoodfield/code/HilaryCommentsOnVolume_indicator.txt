@@ -1,0 +1,89 @@
+Yes, the code looks correct. I have been running it and playing with it and experimenting with using more iterations per time step. I have also put code review comments below. It seems that there is a 1st-order error at the boundary between implicit and explicit, as you described. I think that this will be a higher order error for higher order schemes so it is not so important. But it is worth experimenting with OpenFOAM to see if you get this error.
+
+I have written a version of fiBEFE that has 3 iterations per time step which reduces the problem but you need to use a much smaller time step. I have used these settings:
+
+def IC(x):
+    chair = np.zeros_like(x)
+    for i in range(0,len(x)):
+        if ((x[i]>0.2) & (x[i]<0.3)):
+            chair[i] = 1
+    return chair
+    
+    res = 300
+    nx = 200;nt = 400;a = 0.2;tstart = 0;tend = 2.0;xmin=0;xmax = 1;
+
+and this is my fiBEFE (complete with Doc-string)
+
+def fiBEFE(nx,c,Phi,IMP,EXP):
+    """Hilary's face indicator method for implicit-explicit blended advection with multiple
+    iterations. First-order upwind in space, first-order forward or backward in time. 
+    Input argument nx is not needed and should be removed.
+    c is the Courant number
+    Phi is the dependent variable that is advected.
+    IMP is the locations where it is implicit.
+    EXP is not used and should be removed
+    Phi  at the next time step is returned."""
+    
+    nx = len(Phi)
+    EXP = 1 - IMP
+
+    phiOld = Phi.copy()
+    
+    B = np.zeros([nx,nx])
+    for j in range(0,nx):
+        B[j,(j-1)%nx] =   - IMP[(j-1)%nx]*c;
+        B[j,j]        = 1  + IMP[j]*c;
+
+    for iter in range(3):
+        Phi = phiOld - c*(EXP*Phi - np.roll(EXP,1)*np.roll(Phi,1))
+        Phi = np.linalg.solve(B,Phi)
+
+    return Phi
+
+If you use more accurate discretisations then I think you won't get the same reductions in Courant number limit.
+
+
+1. The code should be on a git repository
+2. There should be comments at the top describing the code in the whole file
+3. The file is call Volume_indicator.py but I think that it also does the face indicator method.
+4. All functions should have doc-strings. Doc-strings describe what the function does, all arguments and the output. Doc-strings are not the same as comments.
+5. What is FEK? It looks like a general TVD scheme. Note that adding ep to the demoninator is not enough to prevent division by zero as the denominator can be zero.
+6. ep should be defined globally or defined in a module and defined using:
+   ep = 1e-8
+not calculated using integer arithmetic.
+
+Ideally ep and other variables that you need globally should be defined in a module and then used like:
+moduleName.ep
+7. Wrap long lines manually. Eg:
+    r =  (np.roll(Phi[:],0) - np.roll(Phi[:],1)) \
+         / (np.roll(Phi[:],-1) - np.roll(Phi[:],0) +ep)
+
+but better would be to use the : operator less:
+
+    r =  (Phi - np.roll(Phi,1)) / (np.roll(Phi,-1) - Phi + ep)
+    
+or
+    denom = where(mag(np.roll(Phi,-1) - Phi) < ep,
+                  ep*sign(np.roll(Phi,-1) - Phi),
+                  np.roll(Phi,-1) - Phi)
+    r = (Phi - np.roll(Phi,1)) /denom
+
+8. The implementation of FEK looks neat :-)
+
+9. I am sceptical about using the implementations of FE and BE for a blended scheme because they assume a uniform Courant number. 
+...
+OK, I see that you do not use them.
+
+10. indEXP and indIMP are defined independently of each other. This is risky. Shouldn't indIMP be defined as:
+indIMP = 1-indEXP
+
+11. Do not put 2 statements on one line.
+
+12. Do not use more brackets than needed. Eg:
+ dx = (xmax-xmin)/(nx); dt = (tend-tstart)/(nt); c = dt/dx*a;
+should be replace by
+ dx = (xmax-xmin)/nx
+ dt = (tend-tstart)/nt
+ c = dt/dx*a
+
+13. I have only read the code as far as fiBEFE.

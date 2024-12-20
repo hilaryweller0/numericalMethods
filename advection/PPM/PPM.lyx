@@ -1,0 +1,368 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf5
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style abbrvnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+PPM by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CW84"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+PPM from section 1 of 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CW84"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial a}{\partial t}+u\frac{\partial a}{\partial\xi}=0.
+\end{equation}
+
+\end_inset
+
+Define:
+\begin_inset Formula 
+\begin{eqnarray}
+a_{j}^{n} & = & \frac{1}{\Delta\xi_{j}}\int_{\xi_{j-1/2}}^{\xi_{j+1/2}}a\left(\xi,t^{n}\right)d\xi\\
+\Delta\xi_{j} & = & \xi_{j+1/2}-\xi_{j-1/2}.
+\end{eqnarray}
+
+\end_inset
+
+Polynomial 
+\begin_inset Formula $a\left(\xi\right)$
+\end_inset
+
+ satisfies
+\begin_inset Formula 
+\begin{equation}
+a_{j}^{n}=\frac{1}{\Delta\xi_{j}}\int_{\xi_{j-1/2}}^{\xi_{j+1/2}}a\left(\xi\right)d\xi.
+\end{equation}
+
+\end_inset
+
+Then
+\begin_inset Formula 
+\begin{equation}
+a_{j}^{n+1}=\frac{1}{\Delta\xi_{j}}\int_{\xi_{j-1/2}}^{\xi_{j+1/2}}a\left(\xi-u\Delta t\right)d\xi.
+\end{equation}
+
+\end_inset
+
+Polynomial 
+\begin_inset Formula $a$
+\end_inset
+
+ is defined in each cell
+\begin_inset Formula 
+\begin{eqnarray}
+a\left(\xi\right) & = & a_{L,j}+x\left(\Delta a_{j}+a_{6,j}\left(1-x\right)\right)\\
+\text{where }x & = & \frac{\xi-\xi_{j-1/2}}{\Delta\xi_{j}},\ \xi_{j-1/2}\le\xi\le\xi_{j+1/2}\\
+\Delta a_{j} & = & a_{R,j}-a_{L,j}\\
+a_{6,j} & = & 6\left(a_{j}^{n}-\frac{1}{2}\left(a_{L,j}+a_{R,j}\right)\right).
+\end{eqnarray}
+
+\end_inset
+
+Where the solution is smooth
+\begin_inset Formula 
+\begin{equation}
+a_{L,j+1}=a_{R,j}=a_{j+1/2}.
+\end{equation}
+
+\end_inset
+
+For a non-uniform grid
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename shots/eqn1p6.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $\delta a_{j}$
+\end_inset
+
+ is the average slope in cell 
+\begin_inset Formula $j$
+\end_inset
+
+ of the parabola with cell averages 
+\begin_inset Formula $a_{j-1}^{n}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $a_{j}^{n}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $a_{j+1}^{n}$
+\end_inset
+
+ and is given by
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename shots/eqn1p7.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CW84"
+literal "false"
+
+\end_inset
+
+ use 
+\begin_inset Formula $\delta_{m}a_{j}$
+\end_inset
+
+ instead
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename shots/eqn1p8.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Where the solution is smooth and the grid is uniform
+\begin_inset Formula 
+\begin{equation}
+a_{j+1/2}=\frac{7}{12}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{1}{12}\left(a_{j+2}^{n}+a_{j-1}^{n}\right).
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename shots/eqn1p10.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Then we can update 
+\begin_inset Formula $a_{j}^{n+1}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+a_{j}^{n+1} & = & a_{j}^{n}-u\frac{\Delta t}{\Delta\xi_{j}}\left(\overline{a}_{j+1/2}-\overline{a}_{j-1/2}\right)\\
+\text{for }u\ge0,\ \overline{a}_{j+1/2} & = & a_{R,j}-\frac{u\Delta t}{2\Delta\xi_{j}}\left(\Delta a_{j}-\left(1-\frac{2}{3}\frac{u\Delta t}{\Delta\xi_{j}}\right)a_{6,j}\right)\\
+\text{for }u\le0,\ \overline{a}_{j+1/2} & = & a_{L,j}-\frac{u\Delta t}{2\Delta\xi_{j}}\left(\Delta a_{j+1}+\left(1+\frac{2}{3}\frac{u\Delta t}{\Delta\xi_{j}}\right)a_{6,j+1}\right).
+\end{eqnarray}
+
+\end_inset
+
+There are more details for handling discontinuities.
+\end_layout
+
+\begin_layout Subsection*
+More Specific for a Uniform Grid without Discontinuities
+\end_layout
+
+\begin_layout Standard
+3rd order for 
+\begin_inset Formula $a_{j+1/2}$
+\end_inset
+
+ give nirvana
+\end_layout
+
+\begin_layout Standard
+Assume 
+\begin_inset Formula $\Delta\xi_{j}=\Delta x$
+\end_inset
+
+ and 
+\begin_inset Formula $u\ge0$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+a_{j+1/2} & = & \frac{7}{12}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{1}{12}\left(a_{j+2}^{n}+a_{j-1}^{n}\right)\\
+\Delta a_{j} & = & a_{j+1/2}-a_{j-1/2}\\
+a_{6,j} & = & 6\left(a_{j}^{n}-\frac{1}{2}\left(a_{j-1/2}+a_{j+1/2}\right)\right)\\
+\overline{a}_{j+1/2} & = & a_{j+1/2}-\frac{u\Delta t}{2\Delta x}\left(\Delta a_{j}-\left(1-\frac{2}{3}\frac{u\Delta t}{\Delta x}\right)a_{6,j}\right)\\
+a_{j}^{n+1} & = & a_{j}^{n}-u\frac{\Delta t}{\Delta x}\left(\overline{a}_{j+1/2}-\overline{a}_{j-1/2}\right)
+\end{eqnarray}
+
+\end_inset
+
+We want to write the PPM flux as a correction,
+ 
+\begin_inset Formula $C$
+\end_inset
+
+,
+ on first-order upwind:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\overline{a}_{j+1/2} & = & a_{j}^{n}+C\\
+\text{define}a_{12,j+1/2} & = & \frac{1}{12}\left(-a_{j-1}^{n}+a_{j}^{n}+a_{j+1}^{n}-a_{j+2}^{n}\right)\\
+\implies C & = & -a_{j}^{n}+a_{j+1/2}-\frac{u\Delta t}{2\Delta x}\left(\Delta a_{j}-\left(1-\frac{2}{3}\frac{u\Delta t}{\Delta x}\right)a_{6,j}\right)\\
+ & = & \frac{1}{2}\left(a_{j+1}^{n}-a_{j}^{n}\right)+a_{12,j+1/2}-\frac{u\Delta t}{2\Delta x}\left(\Delta a_{j}-\left(1-\frac{2}{3}\frac{u\Delta t}{\Delta x}\right)a_{6,j}\right)\\
+\text{Define }\Delta a_{12,j} & = & a_{12,j+1/2}-a_{12,j-1/2}=\frac{1}{12}\left(a_{j-2}^{n}-2a_{j-1}^{n}+2a_{j+1}^{n}-a_{j+2}^{n}\right)\\
+\implies\Delta a_{j} & = & \frac{1}{2}\left(a_{j+1}^{n}-a_{j-1}^{n}\right)+\Delta a_{12,j}\\
+\\\\\\\implies\overline{a}_{j+1/2} & = & \frac{1}{2}\left(a_{j}^{n}+a_{j+1}^{n}\right)+a_{12,j}-\frac{u\Delta t}{2\Delta x}\left(\frac{1}{2}\left(a_{j+1}^{n}-a_{j-1}^{n}\right)+\Delta a_{12,j}-\left(1-\frac{2}{3}\frac{u\Delta t}{\Delta x}\right)a_{6,j}\right)\\
+ & = & a_{j}^{n}+\frac{1}{2}\left(a_{j+1}^{n}-a_{j}^{n}\right)+a_{12,j}-\frac{u\Delta t}{2\Delta x}\left(\frac{1}{2}\left(a_{j+1}^{n}-a_{j-1}^{n}\right)+\Delta a_{12,j}-\left(1-\frac{2}{3}\frac{u\Delta t}{\Delta x}\right)a_{6,j}\right)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "numerics"
+options "abbrvnat"
+encoding "default"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

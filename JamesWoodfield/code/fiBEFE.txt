@@ -1,0 +1,4 @@
+Scheme  :fiBEFE
+Final time :1.0
+CFL :0.45
+Nb points  :200

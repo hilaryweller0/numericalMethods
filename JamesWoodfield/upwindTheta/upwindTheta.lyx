@@ -1,0 +1,338 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Proof that an Upwind 
+\begin_inset Formula $\theta$
+\end_inset
+
+ Scheme is Bounded
+\end_layout
+
+\begin_layout Standard
+Consider the solution of the linear advection equation:
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\psi}{\partial t}+\nabla\cdot\mathbf{u}\psi=0
+\end{equation}
+
+\end_inset
+
+on an arbitrary mesh in arbitrary dimensions using first-order upwind discritisa
+tion in space and an implicit/explicit 
+\begin_inset Formula $\theta$
+\end_inset
+
+ scheme in time, where 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is defined on cell faces.
+ Consider the solution at cell 
+\begin_inset Formula $j$
+\end_inset
+
+ with volume 
+\begin_inset Formula $V_{j}$
+\end_inset
+
+ going from time step 
+\begin_inset Formula $n$
+\end_inset
+
+ to 
+\begin_inset Formula $n+1$
+\end_inset
+
+ a distance 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ apart:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n+1}=\psi_{j}^{n} & + & \frac{\Delta t}{V_{j}}\sum_{i\in\text{in}}\left(1-\theta_{i}\right)U_{i}\psi_{i}^{n}+\frac{\Delta t}{V_{j}}\sum_{i\in\text{in}}\theta_{i}U_{i}\psi_{i}^{n+1}\label{eq:upwindTheta}\\
+ & - & \frac{\Delta t}{V_{j}}\sum_{o\in\text{out}}\left(1-\theta_{o}\right)U_{o}\psi_{j}^{n}-\frac{\Delta t}{V_{j}}\sum_{o\in\text{out}}\theta_{o}U_{o}\psi_{j}^{n+1}\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+where:
+\end_layout
+
+\begin_layout Description
+
+\series medium
+\begin_inset Formula $i\in\text{in}$
+\end_inset
+
+ are the faces of cell 
+\begin_inset Formula $j$
+\end_inset
+
+ with flow into cell 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $j\in\text{out}$
+\end_inset
+
+ are the faces of cell 
+\begin_inset Formula $j$
+\end_inset
+
+ with flow out of cell 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $\theta_{i,j}\in[0,1]$
+\end_inset
+
+ are the time off-centering values at faces 
+\begin_inset Formula $i$
+\end_inset
+
+ or 
+\begin_inset Formula $o$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $U_{i,o}$
+\end_inset
+
+ are the volume fluxes through faces 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $o$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $\psi_{i}$
+\end_inset
+
+ are the values of 
+\begin_inset Formula $\psi$
+\end_inset
+
+ in the cells through the 
+\begin_inset Formula $i$
+\end_inset
+
+ faces.
+\end_layout
+
+\begin_layout Standard
+The flow is divergence free so
+\begin_inset Formula 
+\begin{equation}
+\sum_{i\in\text{in}}U_{i}=\sum_{o\in\text{out}}U_{o}.
+\end{equation}
+
+\end_inset
+
+(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:upwindTheta"
+
+\end_inset
+
+) can be re-arranged as:
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\frac{\psi_{j}^{n}\left(1-\frac{\Delta t}{V_{j}}\sum_{o\in\text{out}}\left(1-\theta_{o}\right)U_{o}\right)+\frac{\Delta t}{V_{j}}\sum_{i\in\text{in}}\left(1-\theta_{i}\right)U_{i}\psi_{i}^{n}+\frac{\Delta t}{V_{j}}\sum_{i\in\text{in}}\theta_{i}U_{i}\psi_{i}^{n+1}}{1+\frac{\Delta t}{V_{j}}\sum_{o\in\text{out}}\theta_{o}U_{o}}\label{eq:upwindTheta2}
+\end{equation}
+
+\end_inset
+
+Let us introduce some short hands:
+\begin_inset Formula 
+\begin{eqnarray*}
+\alpha_{i} & = & \frac{\frac{\Delta t}{V_{j}}\left(1-\theta_{i}\right)U_{i}}{1+\frac{\Delta t}{V_{j}}{\displaystyle \sum_{o\in\text{out}}}\theta_{o}U_{o}}\text{ for each }i\\
+\beta_{i} & = & \frac{\frac{\Delta t}{V_{j}}\theta_{i}U_{i}}{1+\frac{\Delta t}{V_{j}}{\displaystyle \sum_{o\in\text{out}}}\theta_{o}U_{o}}\text{ for each }i\\
+\gamma & = & \frac{1-\frac{\Delta t}{V_{j}}{\displaystyle \sum_{o\in\text{out}}}\left(1-\theta_{o}\right)U_{o}}{1+\frac{\Delta t}{V_{j}}{\displaystyle \sum_{o\in\text{out}}}\theta_{o}U_{o}}
+\end{eqnarray*}
+
+\end_inset
+
+so that (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:upwindTheta2"
+
+\end_inset
+
+) becomes
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{n+1}=\gamma\psi_{j}^{n}+{\displaystyle \sum_{_{i\in\text{in}}}}\alpha_{i}\psi_{i}^{n}+\sum_{_{i\in\text{in}}}\beta_{i}\psi_{i}^{n+1}\label{eq:convexScheme}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+ are clearly non-negative.
+ 
+\begin_inset Formula $\theta_{o}$
+\end_inset
+
+ must be chosen so that the explicit fluxes are limited by the Courant number:
+\begin_inset Formula 
+\begin{equation}
+\frac{\Delta t}{V_{j}}\sum_{o\in\text{out}}\left(1-\theta_{o}\right)U_{o}\le1
+\end{equation}
+
+\end_inset
+
+which implies that 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ is also non-negative.
+ From the divergence free constraint we can see that
+\begin_inset Formula 
+\begin{equation}
+\sum_{i\in\text{in}}\alpha_{i}+\sum_{i\in\text{in}}\beta_{i}+\gamma=1\label{eq:convexParams}
+\end{equation}
+
+\end_inset
+
+So we can see that 
+\begin_inset Formula $\psi_{j}^{n+1}$
+\end_inset
+
+ is a convex combination of 
+\begin_inset Formula $\psi_{j}^{n}$
+\end_inset
+
+, 
+\begin_inset Formula $\psi_{i}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $\psi_{i}^{n+1}$
+\end_inset
+
+ but we do not yet have conditions on 
+\begin_inset Formula $\psi_{i}^{n+1}$
+\end_inset
+
+.
+ However (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:convexScheme"
+
+\end_inset
+
+) holds for every cell in the mesh.
+ Therefore the upwind 
+\begin_inset Formula $\theta$
+\end_inset
+
+ scheme must be globally bounded.
+ Local new extrema can be generated, but not outside the range of previous
+ extrema.
+ Local extrema can move by more than one cell in one time step.
+ So traditional proofs won't work and local extrema do not diminish.
+\end_layout
+
+\end_body
+\end_document

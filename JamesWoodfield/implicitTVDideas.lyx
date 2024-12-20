@@ -1,0 +1,152 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Ideas on Creating a TVD scheme as a correction on first-order Euler backward
+\end_layout
+
+\begin_layout Standard
+Some papers that need to be read when considering how to extend these methods
+ to implicit time stepping are 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Sweb84"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Zal79"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Harten's lemma for explicit schemes states that if a numerical solution
+ of the one dimensional advection equation can be written 
+\begin_inset Formula 
+\begin{align}
+\psi_{j}^{n+1} & =\psi_{j}^{n}+C_{j+0.5}(\psi_{j+1}^{n}-\psi_{j}^{n})-D_{j-0.5}(\psi_{j}^{n}-\psi_{j-1}^{n})
+\end{align}
+
+\end_inset
+
+then the conditions 
+\begin_inset Formula $C_{j+0.5},D_{j-0.5}\geq0$
+\end_inset
+
+ and 
+\begin_inset Formula $|C_{j+0.5}+D_{j+0.5}|\leq1$
+\end_inset
+
+ imply that the scheme is TVD.
+ James has found that the same conditions hold for implicit schemes:
+\begin_inset Formula 
+\begin{align}
+\psi_{j}^{n+1} & =\psi_{j}^{n}+C_{j+0.5}(\psi_{j+1}^{n+1}-\psi_{j}^{n+1})-D_{j-0.5}(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}).
+\end{align}
+
+\end_inset
+
+What about a scheme that is an explicit correction on first-order upwind
+ in space, backward Euler in time, considering only flow to the right:
+\begin_inset Formula 
+\begin{align}
+\psi_{j}^{n+1} & =\psi_{j}^{n}-1\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)+C_{j+0.5}\left(\psi_{j+1}^{n}-\psi_{j}^{n}\right)-\left(D_{j-0.5}-1\right)\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right).
+\end{align}
+
+\end_inset
+
+Is this still TVD? That would be useful.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

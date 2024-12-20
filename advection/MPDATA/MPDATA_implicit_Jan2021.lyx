@@ -1,0 +1,1690 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{animate}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 15cm
+\paperheight 8cm
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Stable MPDATA with Implicit Time Stepping on an Unstructured Grid
+\end_layout
+
+\begin_layout Author
+Hilary and James Woodfield
+\end_layout
+
+\begin_layout Standard
+Description of MPDATA is from 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SM98,SS05"
+
+\end_inset
+
+.
+ The MPDATA gauge version from 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SC86,KS17"
+
+\end_inset
+
+ has been implemented but not considered here.
+ MPDATA has been combined with the 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Zal79"
+
+\end_inset
+
+ limiter following 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SG90"
+
+\end_inset
+
+ but this cannot be extended to the implicit version so is not considered
+ here.
+\end_layout
+
+\begin_layout Subsection*
+Explicit MPDATA
+\end_layout
+
+\begin_layout Standard
+\noindent
+To solve 
+\begin_inset Formula 
+\begin{equation}
+{\textstyle \frac{\partial\Psi}{\partial t}=-\nabla\cdot\left(\mathbf{u}\Psi\right)}
+\end{equation}
+
+\end_inset
+
+using first-order explicit in time, first-order upwind in space and Gauss's
+ divergence theorem on an unstructured grid:
+\begin_inset Formula 
+\begin{eqnarray}
+\Psi^{d} & = & \Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces}}(\mathbf{u}\cdot\mathbf{S})\Psi_{\text{up}}^{n}\\
+ & = & \Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}>0}(\mathbf{u}\cdot\mathbf{S})\Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}<0}(\mathbf{u}\cdot\mathbf{S})\Psi_{N}^{n}
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ is the outward pointing normal to the face with magnitude the area of the
+ face, 
+\begin_inset Formula $V$
+\end_inset
+
+ is the cell volume, 
+\begin_inset Formula $\Psi_{\text{up}}$
+\end_inset
+
+ is the value of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ on the upwind side of the face and 
+\begin_inset Formula $\Psi_{N}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ in the neighbour cell on the other side of the face in particular.
+ The MPDATA anti-diffusive flux is:
+\begin_inset Formula 
+\begin{equation}
+vS=\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}-\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\right\} 
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $S=|\mathbf{S}|$
+\end_inset
+
+, 
+\begin_inset Formula $\Delta x$
+\end_inset
+
+ is the cell centre to cell centre distance across the face, 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ interpolated from cell centres onto the face, 
+\begin_inset Formula $\nabla_{n}\Psi$
+\end_inset
+
+ is the gradient of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ normal to the face and 
+\begin_inset Formula $\nabla\Psi$
+\end_inset
+
+ is the whole gradient of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the face.
+ Note we will have to take care how to avoid the divide by zero when 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is zero.
+\end_layout
+
+\begin_layout Subsection*
+Implicit MPDATA
+\end_layout
+
+\begin_layout Standard
+\noindent
+If instead the first-order step is implicit:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{d}=\Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}>0}(\mathbf{u}\cdot\mathbf{S})\Psi^{d}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}<0}(\mathbf{u}\cdot\mathbf{S})\Psi_{N}^{d}\label{eq:BE_upwind}
+\end{equation}
+
+\end_inset
+
+then the anti-diffusive flux is:
+\begin_inset Formula 
+\begin{equation}
+vS=\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi+\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\right\} .
+\end{equation}
+
+\end_inset
+
+Again we will have to take care how to avoid the divide by zero when 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is zero.
+\end_layout
+
+\begin_layout Standard
+\noindent
+It can be shown that the implicit first-order step (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BE_upwind"
+
+\end_inset
+
+) is positive definite.
+ Re-arranging (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BE_upwind"
+
+\end_inset
+
+) gives:
+\begin_inset Formula 
+\[
+\Psi^{d}=\frac{\Psi^{n}+\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}<0}|\mathbf{u}\cdot\mathbf{S}|\Psi_{N}^{d}}{1+\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}>0}(\mathbf{u}\cdot\mathbf{S})}
+\]
+
+\end_inset
+
+so 
+\begin_inset Formula $\Psi^{d}$
+\end_inset
+
+ is positive when all of the neighbours, 
+\begin_inset Formula $\Psi_{N}^{d}$
+\end_inset
+
+ are positive.
+ I also think that it is bounded for a non-divergent velocity field but
+ not sure how to prove this.
+\end_layout
+
+\begin_layout Standard
+\noindent
+The anti-diffusive flux can be applied with first-order upwind, explicit
+ time stepping so it is positive definite as long as 
+\begin_inset Formula $vS$
+\end_inset
+
+ obeys a Courant number restriction:
+\begin_inset Formula 
+\begin{equation}
+\frac{\Delta t}{V}\sum_{\text{faces}}|vS|\le1\label{eq:impCorr}
+\end{equation}
+
+\end_inset
+
+for all cells.
+ For now, I am using the constraint
+\begin_inset Formula 
+\begin{gather*}
+\frac{\Delta t}{V}|vS|\le\frac{1}{\text{number of neighbours}}=\frac{1}{4}.
+\end{gather*}
+
+\end_inset
+
+This constraint can be obeyed by adding to the denominator of 
+\begin_inset Formula $vS$
+\end_inset
+
+ which also removes the divide by zero:
+\begin_inset Formula 
+\begin{gather*}
+\frac{\Delta t}{V}|vS|\le\frac{1}{4}\\
+\impliedby\frac{\Delta t}{S\Delta x}\Biggl|\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi\pm\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\right\} \Biggr|\le\frac{1}{4}\\
+\iff\Psi_{f}\ge2\frac{\Delta t}{S}\Biggl||\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi\pm\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\Biggr|
+\end{gather*}
+
+\end_inset
+
+where the plus sign is used after an implicit first step and the minus sign
+ after an explicit first step.
+ For second-order accurate results and smooth solutions, 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ needs a smooth transition between the minimum value and the interpolated
+ value and needs to be dominated by the larger of the two.
+ For this we use:
+\begin_inset Formula 
+\[
+\Psi_{\text{denom}}=\left\{ \Psi_{f}^{2}+4\frac{\Delta t^{2}}{S^{2}}\Biggl||\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi\pm\frac{\Delta t}{\Delta x}(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\Biggr|^{2}\right\} ^{\frac{1}{2}}
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+where 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is a linear interpolation between the owner and neighbour values of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Order of Predictors and Correctors
+\end_layout
+
+\begin_layout Standard
+For implicit time stepping, results are different if the corrector is applied
+ before or after the first-order implicit step.
+ Results are smoother if the predictor is applied first.
+ This leads to overshoots in the intermediate field, after the precitor
+ is applied and before the diffusive implicit upwind step is taken.
+ However these overshoots are removed by the implicit upwind step.
+ So the first corrector (c) – predictor (p) steps are:
+\begin_inset Formula 
+\begin{eqnarray*}
+vS & = & \frac{1}{2\Psi_{\text{denom}}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{n}+\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{n}\right)\right\} \\
+\Psi^{c} & = & \Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces}}(vS)\Psi_{\text{up}}^{n}\\
+\Psi^{p} & = & \Psi^{c}-\frac{\Delta t}{V}\sum_{\text{faces}}(\mathbf{u}\cdot\mathbf{S})\Psi_{\text{up}}^{p}.
+\end{eqnarray*}
+
+\end_inset
+
+The resulting field, 
+\begin_inset Formula $\Psi^{p}$
+\end_inset
+
+, is positive and smooth since any overshoots in 
+\begin_inset Formula $\Psi^{c}$
+\end_inset
+
+ are smoothed out by the implicit upwind solver.
+ However this reduces the accuracy of 
+\begin_inset Formula $\Psi^{p}$
+\end_inset
+
+.
+ There is also an error for large Courant numbers because the 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ field used to calculate the anti-diffusive flux is at the beginning of
+ the time step and 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ can move a long distance in one time step.
+ Therefore a second correction is applied, calculating 
+\begin_inset Formula $vS$
+\end_inset
+
+ from 
+\begin_inset Formula $\Psi^{p}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+vS^{\prime}=\frac{1}{2\Psi_{\text{denom}}^{p}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi^{p}+\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi^{p}\right)\right\} .
+\end{equation}
+
+\end_inset
+
+Care is needed to avoid correcting twice and to ensure positivity:
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi^{n+1} & = & \Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces}}(vS)\Psi_{\text{up}}^{n}-\frac{\Delta t}{V}\sum_{\text{faces}}(\mathbf{u}\cdot\mathbf{S})\Psi_{\text{up}}^{p}-\frac{\Delta t}{V}\sum_{\text{faces}}\left(vS^{\prime}-vS\right)\Psi_{\text{up}}^{p}.
+\end{eqnarray*}
+
+\end_inset
+
+This formula needs to be checked.
+ Are there any better options? It does ensure positivity but it needs aggressive
+ limiting to avoid oscillations for large Courant numbers.
+ However the above formula does improve accuracy and so is needed for small
+ Courant numbers in order to come close to competing with the accuracy of
+ explicit.
+\end_layout
+
+\begin_layout Section*
+Results
+\end_layout
+
+\begin_layout Subsection*
+Solid Body Rotation
+\end_layout
+
+\begin_layout Standard
+The solid body rotation test case is similar to that of 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "LLM96"
+
+\end_inset
+
+ but the velocity linearly decays to zero outside the solid body region
+ and the initial tracer is a cosine squared bell so that it is 
+\begin_inset Formula $C_{3}$
+\end_inset
+
+ continuous at the edges to aid convergence with resolution.
+ 
+\end_layout
+
+\begin_layout Itemize
+For small Courant numbers the explicit model is more accurate that the implicit
+ version.
+\end_layout
+
+\begin_layout Itemize
+The implicit model is more accurate that first-order for all Courant numbers
+ and resolutions.
+\end_layout
+
+\begin_layout Itemize
+In the sheared region of the flow (where the tracer value should be zero),
+ the highest resolution implicit version has oscillations in the anti-diffusive
+ velocity.
+ This would lead to oscillations in the tracer for other test cases.
+\end_layout
+
+\begin_layout Itemize
+For fixed Courant numbers, both model versions converge at close to second-order
+ accuracy.
+\end_layout
+
+\begin_layout Itemize
+The maximum tracer can go up as well as down (like your investments).
+ It is not monotonic.
+ But it is positive preserving.
+\end_layout
+
+\begin_layout Itemize
+If you increase the spatial resolution without reducing the time step, the
+ accuracy increases for Courant numbers less than 2.8 but going from Courant
+ number 2.8 to 5.6, errors stay the same when increasing the spatial resolution
+ and keeping the time step fixed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Explicit, 
+\begin_inset Formula $c<0.7$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial and analytic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $80\times80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_exp/0/UT.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/80x80/c05_exp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $160\times160$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $320\times320$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_exp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/320x320/c05_exp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/legends/vTerror_Terror.eps
+	lyxscale 50
+	display false
+	width 98text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results of solid body rotation after one complete revolution.
+ The initial conditions and constant velocity field are shown in the top
+ left.
+ The other plots show contours of the tracer after one revolution, vectors
+ show the anti-diffusive velocity and colours show the errors.
+ Explicit version of MPDATA with 
+\begin_inset Formula $c<0.7$
+\end_inset
+
+.
+ 1600, 800 and 400 time steps for each resolution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Implicit, 
+\begin_inset Formula $c<0.7$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial and analytic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $80\times80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_exp/0/UT.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/80x80/c05_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $160\times160$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $320\times320$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/320x320/c05_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/legends/vTerror_Terror.eps
+	lyxscale 50
+	width 98text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results of solid body rotation after one complete revolution.
+ The initial conditions and constant velocity field are shown in the top
+ left.
+ The other plots show contours of the tracer after one revolution, vectors
+ show the anti-diffusive velocity and colours show the errors.
+ implicit version of MPDATA with 
+\begin_inset Formula $c<0.7$
+\end_inset
+
+.
+ 1600, 800 and 400 time steps for each resolution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Implicit, 
+\begin_inset Formula $c<1.4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial and analytic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $80\times80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_exp/0/UT.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/80x80/c1_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $160\times160$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $320\times320$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c1_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/320x320/c1_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/legends/vTerror_Terror.eps
+	lyxscale 50
+	display false
+	width 98text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results of solid body rotation after one complete revolution.
+ The initial conditions and constant velocity field are shown in the top
+ left.
+ The other plots show contours of the tracer after one revolution, vectors
+ show the anti-diffusive velocity and colours show the errors.
+ implicit version of MPDATA with 
+\begin_inset Formula $c<1.4$
+\end_inset
+
+.
+ 800, 400 and 200 time steps for each resolution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Implicit, 
+\begin_inset Formula $c<2.7$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial and analytic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $80\times80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_exp/0/UT.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/80x80/c2_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $160\times160$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $320\times320$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c2_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/320x320/c2_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/legends/vTerror_Terror.eps
+	lyxscale 50
+	display false
+	width 98text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results of solid body rotation after one complete revolution.
+ The initial conditions and constant velocity field are shown in the top
+ left.
+ The other plots show contours of the tracer after one revolution, vectors
+ show the anti-diffusive velocity and colours show the errors.
+ implicit version of MPDATA with 2.7.
+ 400, 200 and 100 time steps for each resolution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Implicit, 
+\begin_inset Formula $c<5.4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial and analytic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $80\times80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c05_exp/0/UT.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/80x80/c4_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $160\times160$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $320\times320$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/160x160/c4_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/320x320/c4_imp/600/vTerror.pdf
+	lyxscale 50
+	width 48text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/legends/vTerror_Terror.eps
+	lyxscale 50
+	display false
+	width 98text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results of solid body rotation after one complete revolution.
+ The initial conditions and constant velocity field are shown in the top
+ left.
+ The other plots show contours of the tracer after one revolution, vectors
+ show the anti-diffusive velocity and colours show the errors.
+ implicit version of MPDATA with 5.4.
+ 200, 100 and 50 time steps for each resolution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/plots/l2errors.eps
+	lyxscale 50
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Convergence with resolution of the 
+\begin_inset Formula $\ell_{2}$
+\end_inset
+
+ error norm after 120 seconds (one fifth of a resolution).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/hilary/OpenFOAM/hilary-7/run/hilary/advection/washingMachine/MPDATAcosSqr/plots/TminMax.eps
+	lyxscale 50
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Maximum tracer values for the 
+\begin_inset Formula $320\times320$
+\end_inset
+
+ simulations.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Deformational Flow
+\end_layout
+
+\begin_layout Standard
+This test case converges with first-order accuracy and is more subject to
+ rounding errors.
+ Results to follow ...
+\end_layout
+
+\begin_layout Subsection*
+Solver
+\end_layout
+
+\begin_layout Standard
+I am using one of the OpenFOAM solvers for asymmetric matrices: bi-conjugate
+ Gradient with a DILU preconditioner.
+ I haven't tried other solvers.
+ For one of the solid body rotation test case it does 2 iterations with
+ the maximum Courant number >1 and 1 iteration when the max Co<1.
+ For the deformational flow it does 6 iterations when max Co~7.
+ 2 iterations when max Co~1 and varies in between.
+ The solver seems to be cheap relative to the calculation of the anti-diffusive
+ flux.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

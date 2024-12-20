@@ -1,0 +1,627 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Third-order,
+ infinite gauge MPDATA (LW)
+\end_layout
+
+\begin_layout Standard
+Hilary Weller 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+<h.weller@reading.ac.uk>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the method outlined at
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename LW3_Chegg.png
+	width 100text%
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+to solve the 1D linear advection equation 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\psi}{\partial t}+u\frac{\partial\psi}{\partial x}=0.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Second-order Explicit Lax-Wendroff
+\end_layout
+
+\begin_layout Standard
+The infinite gauge (Lax-Wendroff) MPDATA explicit scheme for 
+\begin_inset Formula $c=u\Delta t/\Delta x>0$
+\end_inset
+
+ in two stages is
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{1st} & = & \psi_{i}^{(n)}-c\left(\psi_{i}^{(n)}-\psi_{i-1}^{(n)}\right)\\
+\psi_{i}^{2nd} & = & \psi_{i}^{1st}-\frac{c-c^{2}}{2}\left(\psi_{i+1}^{(n)}-2\psi_{i}^{(n)}+\psi_{i-1}^{(n)}\right)\\
+\psi_{i}^{(n+1)} & = & \psi_{i}^{2nd}.
+\end{eqnarray*}
+
+\end_inset
+
+To show that this is second-order in space and time,
+ consider the Taylor series for 
+\begin_inset Formula $\psi_{i}^{(n+1)}$
+\end_inset
+
+ about 
+\begin_inset Formula $\psi_{i,}^{(n)}$
+\end_inset
+
+ keeping the first three terms:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}+\Delta t\frac{\partial\psi}{\partial t}_{i}^{(n)}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{i}^{(n)}+\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi}{\partial t^{3}}_{i}^{(n)}+O\left(\Delta t^{4}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Replace all time derivatives with spatial derivatives using the advection equation:
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\psi}{\partial t} & = & -u\frac{\partial\psi}{\partial x}\\
+\frac{\partial^{2}\psi}{\partial t^{2}} & = & u^{2}\frac{\partial^{2}\psi}{\partial x^{2}}\\
+\frac{\partial^{3}\psi}{\partial t^{3}} & = & -u^{3}\frac{\partial^{3}\psi}{\partial x^{3}}\\
+\implies\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}-\Delta tu\frac{\partial\psi}{\partial x}_{i}^{(n)}+\frac{\Delta t^{2}}{2!}u^{2}\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n)}-\frac{\Delta t^{3}}{3!}u^{3}\frac{\partial^{3}\psi}{\partial x^{3}}_{i}^{(n)}+O\left(\Delta t^{4}\right).\label{eq:TaylorSubs}
+\end{eqnarray}
+
+\end_inset
+
+Use second-order approximations for 
+\begin_inset Formula $\frac{\partial\psi}{\partial x}_{i}^{(n)}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n)}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\psi}{\partial x}_{i}^{(n)} & = & \frac{\psi_{i+1}^{(n)}-\psi_{i-1}^{(n)}}{2\Delta x}+O\left(\Delta x^{2}\right)\\
+\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n)} & = & \frac{\psi_{i+1}^{(n)}-2\psi_{i}^{(n)}+\psi_{i-1}^{(n)}}{\Delta x^{2}}+O\left(\Delta x^{2}\right)
+\end{eqnarray}
+
+\end_inset
+
+and substitute into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:TaylorSubs"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}-\Delta tu\frac{\psi_{i+1}-\psi_{i-1}}{2\Delta x}+\frac{\Delta t^{2}}{2!}u^{2}\frac{\psi_{i+1}-2\psi_{i}+\psi_{i-1}}{\Delta x^{2}}+O\left(\Delta x^{2}\right)+O\left(\Delta t^{3}\right)\\
+ & = & \psi_{i}^{(n)}-\frac{c}{2}\left(\psi_{i+1}-\psi_{i-1}\right)+\frac{c^{2}}{2}\left(\psi_{i+1}-2\psi_{i}+\psi_{i-1}\right)+O\left(\Delta x^{2}\right)+O\left(\Delta t^{3}\right)\\
+ & = & \psi_{i}^{(n)}-c\left(\psi_{i}-\psi_{i-1}\right)+c\left(\psi_{i}-\psi_{i-1}\right)-\frac{c}{2}\left(\psi_{i+1}-\psi_{i-1}\right)\\
+ & + & \frac{c^{2}}{2}\left(\psi_{i+1}-2\psi_{i}+\psi_{i-1}\right)+O\left(\Delta x^{2}\right)+O\left(\Delta t^{3}\right)\\
+ & = & \psi_{i}^{(n)}-c\left(\psi_{i}-\psi_{i-1}\right)-\frac{c}{2}\left(\psi_{i+1}-2\psi_{i}+\psi_{i-1}\right)+\frac{c^{2}}{2}\left(\psi_{i+1}-2\psi_{i}+\psi_{i-1}\right)\\
+ & + & O\left(\Delta x^{2}\right)+O\left(\Delta t^{3}\right)\\
+ & = & \psi_{i}^{(n)}-c\left(\psi_{i}^{(n)}-\psi_{i-1}^{(n)}\right)-\frac{c-c^{2}}{2}\left(\psi_{i+1}^{(n)}-2\psi_{i}^{(n)}+\psi_{i-1}^{(n)}\right)+O\left(\Delta x^{2}\right)+O\left(\Delta t^{3}\right)
+\end{eqnarray*}
+
+\end_inset
+
+which is Lax-Wendroff for 
+\begin_inset Formula $c>0$
+\end_inset
+
+.
+ This is second-order in space and time because if we were to rewrite as an equation for 
+\begin_inset Formula $\frac{\psi_{i}^{(n+1)}-\psi_{i}^{(n)}}{\Delta t}$
+\end_inset
+
+,
+ we would divide through by 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+,
+ reducing the order in time.
+ The other way to think of this is that each time steps has accuracy 
+\begin_inset Formula $O\left(\Delta t^{3}\right)$
+\end_inset
+
+ but the smaller the time step,
+ the more time steps need to be taken,
+ which reduces the order by one.
+\end_layout
+
+\begin_layout Section
+Third-order Explicit Lax-Wendroff
+\end_layout
+
+\begin_layout Standard
+To derive a third-order scheme,
+ we need the approximations for 
+\begin_inset Formula $\frac{\partial\psi}{\partial x}_{i}^{(n)}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n)}$
+\end_inset
+
+ to be third-order and we also need a third-order approximation for 
+\begin_inset Formula $\frac{\partial^{3}\psi}{\partial x^{3}}_{i}^{(n)}$
+\end_inset
+
+ in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:TaylorSubs"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+ The easiest way to find these is probably to construct a cubic polynomial for 
+\begin_inset Formula $\psi$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\psi=ax^{3}+bx^{2}+cx+d\label{eq:cubicPoly}
+\end{equation}
+
+\end_inset
+
+so that
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi^{\prime} & = & 3ax^{2}+2bx+c\\
+\psi^{\prime\prime} & = & 6ax+2b\\
+\psi^{\prime\prime} & = & 6a.
+\end{eqnarray*}
+
+\end_inset
+
+Then if we assume that position 
+\begin_inset Formula $i$
+\end_inset
+
+ is at 
+\begin_inset Formula $x=0,$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i} & = & d\\
+\psi_{i}^{\prime} & = & c\\
+\psi_{i}^{\prime\prime} & = & 2b\\
+\psi_{i}^{\prime\prime\prime} & = & 6a.
+\end{eqnarray*}
+
+\end_inset
+
+Substituting positions 
+\begin_inset Formula $x_{i-2}=-2\Delta x,$
+\end_inset
+
+
+\begin_inset Formula $x_{i-1}=-\Delta x$
+\end_inset
+
+,
+ 
+\begin_inset Formula $x_{i+1}=\Delta x$
+\end_inset
+
+ into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:cubicPoly"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) gives
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{i-2} & = & -8a\Delta x^{3}+4b\Delta x^{2}-2c\Delta x+d\\
+\psi_{i-1} & = & -a\Delta x^{3}+b\Delta x^{2}-c\Delta x+d\\
+\psi_{i} & = & d\\
+\psi_{i+1} & = & a\Delta x^{3}+b\Delta x^{2}+c\Delta x+d.
+\end{eqnarray}
+
+\end_inset
+
+which can be solving using Gaussian elimination to find 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $c$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{i-2}+8\psi_{i+1}-9\psi_{i} & = & 12b\Delta x^{2}+6c\Delta x\\
+\psi_{i-1}+\psi_{i+1}-2\psi_{i} & = & 2b\Delta x^{2}\\
+\implies b & = & \frac{\psi_{i+1}-2\psi_{i}+\psi_{i-1}}{2\Delta x^{2}}\\
+\implies\psi_{i-2}+8\psi_{i+1}-9\psi_{i} & = & 6\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)+6c\Delta x\\
+\implies c & = & \frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6\Delta x}\\
+a\Delta x^{3} & = & \psi_{i+1}-b\Delta x^{2}-c\Delta x-\psi_{i}\\
+ & = & \psi_{i+1}-\frac{1}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)-\frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6}-\psi_{i}\\
+ & = & \frac{1}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right).
+\end{eqnarray}
+
+\end_inset
+
+Which gives:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{\prime} & = & \frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6\Delta x}\\
+\psi_{i}^{\prime\prime} & = & \frac{\psi_{i-1}-2\psi_{i}+\psi_{i+1}}{\Delta x^{2}}\\
+\psi_{i}^{\prime\prime\prime} & = & \frac{\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}}{\Delta x^{3}}.
+\end{eqnarray*}
+
+\end_inset
+
+Substituting these into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:TaylorSubs"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) gives
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}-\Delta tu\frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6\Delta x}+\frac{\Delta t^{2}}{2!}u^{2}\frac{\psi_{i-1}-2\psi_{i}+\psi_{i+1}}{\Delta x^{2}}\\
+ & - & \frac{\Delta t^{3}}{3!}u^{3}\frac{\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}}{\Delta x^{3}}+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+assuming that all terms on the RHS are at time 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ Substituting 
+\begin_inset Formula $c=u\Delta t/\Delta x$
+\end_inset
+
+ and writing as corrections on 1st-order upwind and on 2nd-order LW and simplifying gives
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}-c\left(\psi_{i}-\psi_{i-1}\right)-\frac{c}{6}\left(\psi_{i-2}-3\psi_{i}+2\psi_{i+1}\right)+\frac{c^{2}}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & - & \frac{c^{3}}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right).\\
+ & = & \psi_{i}^{(n)}-c\left(\psi_{i}-\psi_{i-1}\right)-\frac{c-c^{2}}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)+\frac{c}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & - & \frac{c}{6}\left(\psi_{i-2}-3\psi_{i}+2\psi_{i+1}\right)-\frac{c^{3}}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3},\Delta t^{4}\right).\\
+ & = & \psi_{i}^{(n)}-c\left(\psi_{i}-\psi_{i-1}\right)-\frac{c-c^{2}}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & - & \frac{c}{6}\left(\psi_{i-2}-3\psi_{i-1}+3\psi_{i}-\psi_{i+1}\right)-\frac{c^{3}}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3},\Delta t^{4}\right).\\
+ & = & \psi_{i}^{(n)}-c\left(\psi_{i}-\psi_{i-1}\right)-\frac{c-c^{2}}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & + & \frac{1}{6}\left(c-c^{3}\right)\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3},\Delta t^{4}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Or writing as a correction on second order LW:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{1st} & = & \psi_{i}^{(n)}-c\left(\psi_{i}^{(n)}-\psi_{i-1}^{(n)}\right)+O\left(\Delta x,\Delta t^{2}\right)\\
+\psi_{i}^{2nd} & = & \psi_{i}^{1st}-\frac{c}{2}\left(1-c\right)\left(\psi_{i+1}^{(n)}-2\psi_{i}^{(n)}+\psi_{i-1}^{(n)}\right)+O\left(\Delta x^{2},\Delta t^{3}\right)\\
+\psi_{i}^{3rd} & = & \psi_{i}^{2nd}+\frac{c}{6}\left(1-c^{2}\right)\left(\psi_{i+1}^{(n)}-3\psi_{i}^{(n)}+3\psi_{i-1}^{(n)}-\psi_{i-2}^{(n)}\right)+O\left(\Delta x^{3},\Delta t^{4}\right).
+\end{eqnarray*}
+
+\end_inset
+
+This can be written to look more like MPDATA:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{1st} & = & \psi_{i}^{(n)}-c\left(\psi_{i}^{(n)}-\psi_{i-1}^{(n)}\right)+O\left(\Delta x,\Delta t^{2}\right)\\
+\psi_{i}^{2nd} & = & \psi_{i}^{1st}-\Delta t\frac{\partial}{\partial x}\left\{ \frac{u}{2}\left(\Delta x-u\Delta t\right)\frac{\partial\psi}{\partial x}\right\} +O\left(\Delta x^{2},\Delta t^{3}\right)\\
+\psi_{i}^{3rd} & = & \psi_{i}^{2nd}+\Delta t\frac{\partial}{\partial x}\left\{ \frac{u}{6}\left(\Delta x^{2}-u^{2}\Delta t^{2}\right)\frac{\partial^{2}\psi}{\partial x^{2}}\right\} +O\left(\Delta x^{3},\Delta t^{4}\right).
+\end{eqnarray*}
+
+\end_inset
+
+For the infinite gauge version,
+ all gradients in the correction steps are centered.
+\end_layout
+
+\begin_layout Section
+Third-order Implicit Lax-Wendroff
+\end_layout
+
+\begin_layout Standard
+Use the Taylor series for 
+\begin_inset Formula $\psi_{i}^{(n-1)}$
+\end_inset
+
+ about 
+\begin_inset Formula $\psi_{i,}^{(n)}$
+\end_inset
+
+ keeping the first three terms:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{(n-1)} & = & \psi_{i}^{(n)}-\Delta t\frac{\partial\psi}{\partial t}_{i}^{(n)}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi}{\partial t^{2}}_{i}^{(n)}-\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi}{\partial t^{3}}_{i}^{(n)}+O\left(\Delta t^{4}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Replace all time derivatives with spatial derivatives using the advection equation:
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\psi}{\partial t} & = & -u\frac{\partial\psi}{\partial x}\\
+\frac{\partial^{2}\psi}{\partial t^{2}} & = & u^{2}\frac{\partial^{2}\psi}{\partial x^{2}}\\
+\frac{\partial^{3}\psi}{\partial t^{3}} & = & -u^{3}\frac{\partial^{3}\psi}{\partial x^{3}}\\
+\implies\psi_{i}^{(n-1)} & = & \psi_{i}^{(n)}+\Delta tu\frac{\partial\psi}{\partial x}_{i}^{(n)}+\frac{\Delta t^{2}}{2!}u^{2}\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n)}+\frac{\Delta t^{3}}{3!}u^{3}\frac{\partial^{3}\psi}{\partial x^{3}}_{i}^{(n)}+O\left(\Delta t^{4}\right).\label{eq:TaylorSubs-1}
+\end{eqnarray}
+
+\end_inset
+
+Use third-order approximations for 
+\begin_inset Formula $\frac{\partial\psi}{\partial x}_{i}^{(n)}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n)}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{\partial^{3}\psi}{\partial x^{3}}_{i}^{(n)}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{\prime} & = & \frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6\Delta x}\\
+\psi_{i}^{\prime\prime} & = & \frac{\psi_{i-1}-2\psi_{i}+\psi_{i+1}}{\Delta x^{2}}\\
+\psi_{i}^{\prime\prime\prime} & = & \frac{\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}}{\Delta x^{3}}.
+\end{eqnarray*}
+
+\end_inset
+
+and substitute into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:TaylorSubs-1"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{i}^{(n-1)} & = & \psi_{i}^{(n)}+\Delta tu\frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6\Delta x}+\frac{\Delta t^{2}}{2!}u^{2}\frac{\psi_{i-1}-2\psi_{i}+\psi_{i+1}}{\Delta x^{2}}\\
+ & + & \frac{\Delta t^{3}}{3!}u^{3}\frac{\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}}{\Delta x^{3}}+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+assuming that all terms on the RHS are at time 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ Substituting 
+\begin_inset Formula $c=u\Delta t/\Delta x$
+\end_inset
+
+ and writing as corrections on 1st-order upwind and on 2nd-order LW and simplifying gives
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{(n-1)} & = & \psi_{i}^{(n)}+c\left(\psi_{i}-\psi_{i-1}\right)+\frac{c}{6}\left(\psi_{i-2}-3\psi_{i}+2\psi_{i+1}\right)+\frac{c^{2}}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & + & \frac{c^{3}}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right).\\
+ & = & \psi_{i}^{(n)}+c\left(\psi_{i}-\psi_{i-1}\right)+\frac{c}{6}\left(\psi_{i-2}-3\psi_{i}+2\psi_{i+1}\right)+\frac{c^{2}+c}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & - & \frac{c}{6}\left(3\psi_{i-1}-6\psi_{i}+3\psi_{i+1}\right)+\frac{c^{3}}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right).\\
+ & = & \psi_{i}^{(n)}+c\left(\psi_{i}-\psi_{i-1}\right)+\frac{c^{2}+c}{2}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+ & + & \frac{c^{3}-c}{6}\left(\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}\right)+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right).\\
+\implies\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}-c\left(\psi_{i}^{(n+1)}-\psi_{i-1}^{(n+1)}\right)-\frac{c^{2}+c}{2}\left(\psi_{i-1}^{(n+1)}-2\psi_{i}^{(n+1)}+\psi_{i+1}^{(n+1)}\right)\\
+ & - & \frac{c^{3}-c}{6}\left(\psi_{i+1}^{(n+1)}-3\psi_{i}^{(n+1)}+3\psi_{i-1}^{(n+1)}-\psi_{i-2}^{(n+1)}\right)+O\left(\Delta x^{3}\right)+O\left(\Delta t^{4}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Third-order Implicit-Explicit Lax Wendroff
+\end_layout
+
+\begin_layout Standard
+LW3e is
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-c\left(\psi_{j}^{(n)}-\psi_{j-1}^{(n)}\right)-\frac{c}{2}\left(1-c\right)\left(\psi_{j-1}^{(n)}-2\psi_{j}^{(n)}+\psi_{j+1}^{(n)}\right)\\
+ & + & \frac{c}{6}\left(1-c^{2}\right)\left(\psi_{j+1}^{(n)}-3\psi_{j}^{(n)}+3\psi_{j-1}^{(n)}-\psi_{j-2}^{(n)}\right)
+\end{eqnarray*}
+
+\end_inset
+
+LW3i is 
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-c\left(\psi_{j}^{(n+1)}-\psi_{j-1}^{(n+1)}\right)-\frac{c}{2}\left(1+c\right)\left(\psi_{j-1}^{(n+1)}-2\psi_{j}^{(n+1)}+\psi_{j+1}^{(n+1)}\right)\\
+ & + & \frac{c}{6}\left(c^{2}-1\right)\left(\psi_{j+1}^{(n+1)}-3\psi_{j}^{(n+1)}+3\psi_{j-1}^{(n+1)}-\psi_{j-2}^{(n+1)}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Combining with off-centering 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-\left(1-\alpha\right)c\left(\psi_{j}^{(n)}-\psi_{j-1}^{(n)}\right)-\alpha c\left(\psi_{j}^{(n+1)}-\psi_{j-1}^{(n+1)}\right)\\
+ & - & \left(1-\alpha\right)\frac{c}{2}\left(1-c\right)\left(\psi_{j-1}^{(n)}-2\psi_{j}^{(n)}+\psi_{j+1}^{(n)}\right)\\
+ & - & \alpha\frac{c}{2}\left(1+c\right)\left(\psi_{j-1}^{(n+1)}-2\psi_{j}^{(n+1)}+\psi_{j+1}^{(n+1)}\right)\\
+ & + & \left(1-\alpha\right)\frac{c}{6}\left(1-c^{2}\right)\left(\psi_{j+1}^{(n)}-3\psi_{j}^{(n)}+3\psi_{j-1}^{(n)}-\psi_{j-2}^{(n)}\right)\\
+ & + & \alpha\frac{c}{6}\left(c^{2}-1\right)\left(\psi_{j+1}^{(n+1)}-3\psi_{j}^{(n+1)}+3\psi_{j-1}^{(n+1)}-\psi_{j-2}^{(n+1)}\right)\\
+\alpha & = & \max\left(0,\ 1-\frac{1}{c}\right).
+\end{eqnarray*}
+
+\end_inset
+
+This could be solved with predictor-corrector:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{\prime} & = & \psi_{j}^{(n)}-\left(1-\alpha\right)c\left(\psi_{j}^{(n)}-\psi_{j-1}^{(n)}\right)-\alpha c\left(\psi_{j}^{\prime}-\psi_{j-1}^{\prime}\right)\\
+ & - & \frac{c}{2}\left\{ 1+\alpha c\right\} \left(\psi_{j-1}^{(n)}-2\psi_{j}^{(n)}+\psi_{j+1}^{(n)}\right)\\
+ & + & \frac{c}{6}\left\{ \left(1-2\alpha\right)\left(1-c^{2}\right)\right\} \left(\psi_{j+1}^{(n)}-3\psi_{j}^{(n)}+3\psi_{j-1}^{(n)}-\psi_{j-2}^{(n)}\right)\\
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-\left(1-\alpha\right)c\left(\psi_{j}^{(n)}-\psi_{j-1}^{(n)}\right)-\alpha c\left(\psi_{j}^{(n+1)}-\psi_{j-1}^{(n+1)}\right)\\
+ & - & \left(1-\alpha\right)\frac{c}{2}\left(1-c\right)\left(\psi_{j-1}^{(n)}-2\psi_{j}^{(n)}+\psi_{j+1}^{(n)}\right)\\
+ & - & \alpha\frac{c}{2}\left(1+c\right)\left(\psi_{j-1}^{\prime}-2\psi_{j}^{\prime}+\psi_{j+1}^{\prime}\right)\\
+ & + & \left(1-\alpha\right)\frac{c}{6}\left(1-c^{2}\right)\left(\psi_{j+1}^{(n)}-3\psi_{j}^{(n)}+3\psi_{j-1}^{(n)}-\psi_{j-2}^{(n)}\right)\\
+ & + & \alpha\frac{c}{6}\left(c^{2}-1\right)\left(\psi_{j+1}^{\prime}-3\psi_{j}^{\prime}+3\psi_{j-1}^{\prime}-\psi_{j-2}^{\prime}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

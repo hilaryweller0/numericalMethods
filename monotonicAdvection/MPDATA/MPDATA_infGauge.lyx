@@ -1,0 +1,299 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{animate}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 15cm
+\paperheight 8cm
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+MPDATA with an Infinite Gauge
+\end_layout
+
+\begin_layout Standard
+MPDATA with an infinite gauge has just one correction and uses centred rather
+ than upwind differencing for the correction.
+ This makes it the same as Lax Wendroff.
+ It is described by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "KS17"
+
+\end_inset
+
+.
+ A version with implicit/explicit time stepping is described here.
+\end_layout
+
+\begin_layout Standard
+We solve the linear advection equation for advected quantity 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ with velocity field 
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}+\nabla\cdot\left(\mathbf{u}\Psi\right)=0.\label{eq:linearAdvection}
+\end{equation}
+
+\end_inset
+
+This is solved using Gauss's divergence theorem on an arbitrary grid to
+ go from time level 
+\begin_inset Formula $n$
+\end_inset
+
+ to 
+\begin_inset Formula $n+1$
+\end_inset
+
+ a time step 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ apart with off-centering 
+\begin_inset Formula $\theta$
+\end_inset
+
+ which varies in space:
+\begin_inset Formula 
+\begin{equation}
+\Psi_{C}^{n+1}=\Psi_{C}^{n}-\frac{\Delta t}{V_{C}}\sum_{f\in C}\left\{ \left(1-\theta\right)\Psi_{f}^{n}+\theta\Psi_{f}^{n+1}\right\} U_{f}.\label{eq:advectionGauss}
+\end{equation}
+
+\end_inset
+
+The diffusive first step is
+\begin_inset Formula 
+\begin{equation}
+\Psi_{C}^{d}=\Psi_{C}^{n}-\frac{\Delta t}{V_{C}}\sum_{f\in C}\left\{ \left(1-\theta\right)\Psi_{\text{up}}^{n}+\theta\Psi_{\text{up}}^{n+1}\right\} U_{f}.\label{eq:thetaUp}
+\end{equation}
+
+\end_inset
+
+To find the second-order approximation of 
+\begin_inset Formula $\Psi_{f}^{n+1/2}$
+\end_inset
+
+, we consider a linear combination of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the departure point at time 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the arrival point at time 
+\begin_inset Formula $n+1$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\Psi_{f}^{n+1/2}=\left(1-\theta\right)\Psi_{d}^{n}+\theta\Psi_{a}^{n+1}\label{eq:thetaPsiFace}
+\end{equation}
+
+\end_inset
+
+where the locations of the departure and arrival points are given by
+\begin_inset Formula 
+\begin{eqnarray*}
+\mathbf{x}_{d} & = & \mathbf{x}_{f}-\frac{\Delta t}{2}\mathbf{u}_{f}\\
+\mathbf{x}_{a} & = & \mathbf{x}_{f}+\frac{\Delta t}{2}\mathbf{u}_{f}
+\end{eqnarray*}
+
+\end_inset
+
+The values of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ and the departure and arrival points can be approximated by
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{d}^{n} & = & \Psi_{\text{up}}^{n}+\left(\mathbf{x}_{d}-\mathbf{x}_{u}\right)\cdot\nabla\Psi\\
+\Psi_{a}^{n+1} & = & \Psi_{\text{up}}^{n+1}+\left(\mathbf{x}_{a}-\mathbf{x}_{u}\right)\cdot\nabla\Psi.
+\end{eqnarray*}
+
+\end_inset
+
+Substituting these into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:thetaPsiFace"
+
+\end_inset
+
+) gives
+\begin_inset Formula 
+\begin{eqnarray}
+\Psi_{f}^{n+\nicefrac{1}{2}} & = & \left(1-\theta\right)\Psi_{\text{up}}^{n}+\theta\Psi_{\text{up}}^{n+1}+\left(\mathbf{x}_{d}-\mathbf{x}_{\text{up}}\right)\cdot\nabla\Psi^{n}-\left(1-2\theta\right)\frac{\Delta t}{2}\mathbf{u}\cdot\nabla\Psi\label{eq:PsiDep-1-1-1}
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{x}_{u}$
+\end_inset
+
+ is the centre of the cell upwind of face 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ Therefore the MPDATA correction step is
+\begin_inset Formula 
+\begin{eqnarray*}
+\Psi_{C}^{n+1} & = & \Psi_{C}^{d}+\frac{\Delta t}{V_{C}}\sum_{f\in C}F_{f}\\
+\text{where }F_{f} & = & U_{f}\left\{ \left(\mathbf{x}_{f}-\mathbf{x}_{u}\right)\cdot\nabla\Psi-\left(1-2\theta\right)\frac{\Delta t}{2}\mathbf{u}\cdot\nabla\Psi\right\} 
+\end{eqnarray*}
+
+\end_inset
+
+To make this a more compact discretisation and to treat non-divergent flow
+ correctly, the anti-diffusive flux, 
+\begin_inset Formula $F_{f}$
+\end_inset
+
+ is written:
+\begin_inset Formula 
+\begin{eqnarray}
+F_{f} & = & U_{f}\left\{ \frac{\Delta x}{2}\nabla_{n}\Psi-\left(1-2\theta\right)\frac{\Delta t}{2}\nabla\cdot\left(U_{f}\Psi\right)\right\} 
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\nabla_{n}$
+\end_inset
+
+ is the gradient in the direction normal to the face.
+ To avoid either using downwind values or extrapolating from the upwind
+ to the downwind cell, the 
+\begin_inset Formula $1-2\theta$
+\end_inset
+
+ term in 
+\begin_inset Formula $F_{f}$
+\end_inset
+
+ is only used if 
+\begin_inset Formula $\theta\le\frac{1}{2}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\theta>\frac{1}{2}$
+\end_inset
+
+, this term changes sign and can lead to instability.
+ A first-order error in time is present if this term is omitted which is
+ acceptable for large Courant numbers.
+ Let us consider further the second term:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\Delta t}{V_{C}}\sum_{f\in C}U_{f}\left(1-2\theta\right)\frac{\Delta t}{2}\mathbf{u}\cdot\nabla\Psi & = & \frac{\Delta t^{2}}{2V_{C}}\sum_{f\in C}U_{f}\left(1-2\theta\right)\nabla\cdot\left(U_{f}\Psi_{f}\right)\\
+ & = & \frac{\Delta t^{2}}{2}\nabla\cdot\left\{ \mathbf{u}\left(1-2\theta\right)\nabla\cdot\left(\mathbf{u}\Psi\right)\right\} 
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

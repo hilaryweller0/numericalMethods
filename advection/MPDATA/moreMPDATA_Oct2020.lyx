@@ -1,0 +1,540 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{animate}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize custom
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 15cm
+\paperheight 8cm
+\leftmargin 1cm
+\topmargin 0.5cm
+\rightmargin 1cm
+\bottommargin 1.2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+MPDATA with FCT and Implicit Time Stepping
+\end_layout
+
+\begin_layout Author
+Hilary Weller and James Woodfield
+\end_layout
+
+\begin_layout Standard
+\noindent
+Consider the one-dimensional linear advection equation
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\Psi}{\partial t}=-\frac{\partial}{\partial x}\left(u\Psi\right).
+\end{equation}
+
+\end_inset
+
+MPDATA from 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SM98"
+
+\end_inset
+
+ consists of solving the explicit first-order upstream donor cell method
+ and then applying an anti-diffusive velocity:
+\begin_inset Formula 
+\begin{equation}
+v=\left(|u|\Delta x-u^{2}\Delta t\right)\frac{1}{2\Psi_{f}}\frac{\partial\Psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\Psi_{f}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ linearly interpolated onto the face.
+ If instead we use implicit in time then the anti-diffusive velocity should
+ be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+v=\left(|u|\Delta x+u^{2}\Delta t\right)\frac{1}{2\Psi_{f}}\frac{\partial\Psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+of if we use Crank-Nicolson time stepping then the anti-diffusive velocity
+ should be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+v=\left(|u|\Delta x-\left(1-2\alpha\right)u^{2}\Delta t\right)\frac{1}{2\Psi_{f}}\frac{\partial\Psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Extend to an unstructured grid following 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SS05"
+
+\end_inset
+
+.
+ To solve 
+\begin_inset Formula 
+\begin{equation}
+{\textstyle \frac{\partial\Psi}{\partial t}=-\nabla\cdot\left(\mathbf{u}\Psi\right)}
+\end{equation}
+
+\end_inset
+
+using explicit in time and Gauss's divergence theorem on an unstructured
+ grid:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{n+1}=\Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}>0}(\mathbf{u}\cdot\mathbf{S})\Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}<0}(\mathbf{u}\cdot\mathbf{S})\Psi_{N}^{n}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ is the outward pointing normal to the face with magnitude the area of the
+ face, 
+\begin_inset Formula $V$
+\end_inset
+
+ is the cell volume and 
+\begin_inset Formula $\Psi_{N}$
+\end_inset
+
+ is 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ in the neighbour cell.
+ The anti-diffusive flux is:
+\begin_inset Formula 
+\begin{equation}
+vS=\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi-\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\right\} 
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $S=|\mathbf{S}|$
+\end_inset
+
+, 
+\begin_inset Formula $\Delta x$
+\end_inset
+
+ is the cell centre to cell centre distance across the face, 
+\begin_inset Formula $\nabla_{n}\Psi$
+\end_inset
+
+ is the gradient of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ normal to the face and 
+\begin_inset Formula $\nabla\Psi$
+\end_inset
+
+ is the whole gradient of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ at the face.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+If instead the donor cell step is implicit:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{n+1}=\Psi^{n}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}>0}(\mathbf{u}\cdot\mathbf{S})\Psi^{n+1}-\frac{\Delta t}{V}\sum_{\text{faces with }\mathbf{u}\cdot\mathbf{S}<0}(\mathbf{u}\cdot\mathbf{S})\Psi_{N}^{n+1}
+\end{equation}
+
+\end_inset
+
+then the anti-diffusive flux is:
+\begin_inset Formula 
+\begin{equation}
+vS=\frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi+\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Limits to Ensure Stability
+\end_layout
+
+\begin_layout Standard
+The anti-diffusive flux must be applied with explicit time stepping as it
+ is a divergent velocity field.
+ Therefore it must obey a Courant number restriction for each cell.
+ 
+\begin_inset Formula 
+\begin{equation}
+\frac{\Delta t}{V}\sum_{\text{faces}}|vS|<1
+\end{equation}
+
+\end_inset
+
+To impose this restriction and to ensure that the anti-diffusive velocity
+ field is smooth, the anti-diffusive fluxes are calculated as:
+\begin_inset Formula 
+\begin{eqnarray}
+\Psi_{f} & = & \max\left(\frac{\Psi+\Psi_{N}}{2},10^{-16}\right)\\
+vS & = & \frac{1}{2\Psi_{f}}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi\pm\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\right\} \\
+vS & = & \min\left(\max\left(vS,\ -\frac{S\Delta x}{4\Delta t}\right),\ \frac{S\Delta x}{4\Delta t}\right)\\
+\text{cell centre, }\mathbf{V} & = & \text{reconstruct velocity from}\left(vS\right)\\
+vS & = & \mathbf{V}_{f}\cdot\mathbf{S}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Bounded Time Stepping
+\end_layout
+
+\begin_layout Standard
+Consider Crank Nicolson in time, backward in space with a constant Courant
+ number, 
+\begin_inset Formula $c\ge0$
+\end_inset
+
+ in one dimension:
+\begin_inset Formula 
+\begin{eqnarray*}
+\phi_{j}^{n+1} & = & \phi_{j}^{n}-c\left\{ (1-\alpha)(\phi_{j}^{n}-\phi_{j-1}^{n})+\alpha(\phi_{j}^{n+1}-\phi_{j-1}^{n+1})\right\} \\
+\implies\phi_{j}^{n+1} & = & \frac{\left(1-c(1-\alpha)\right)\phi_{j}^{n}+c(1-\alpha)\phi_{j-1}^{n}+c\alpha\phi_{j-1}^{n+1}}{1+c\alpha}
+\end{eqnarray*}
+
+\end_inset
+
+This is bounded if
+\begin_inset Formula 
+\[
+0\le c(1-\alpha)\le1
+\]
+
+\end_inset
+
+Therefore for best accuracy and boundedness we can use
+\begin_inset Formula 
+\[
+\alpha=\begin{cases}
+0.5 & \text{for }c\le2\\
+1-\frac{1}{c} & \text{otherwise}
+\end{cases}
+\]
+
+\end_inset
+
+However if 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is variable and is defined in cells then we lose conservation and if 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is variable and defined on faces then we lose monotonicity.
+ Instead modify the anti-diffusive flux.
+\end_layout
+
+\begin_layout Subsection*
+MPDATA Gauge 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SC86,KS17"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Advect 
+\begin_inset Formula $\Psi+1$
+\end_inset
+
+ so that the anti-diffusive flux velocity on an unstructured mesh is:
+\begin_inset Formula 
+\begin{equation}
+v_{g}S=\frac{1}{2\left(\Psi_{f}+1\right)}\left\{ \Delta x|\mathbf{u}\cdot\mathbf{S}|\nabla_{n}\Psi-\Delta t(\mathbf{u}\cdot\mathbf{S})\left(\mathbf{u}\cdot\nabla\Psi\right)\right\} 
+\end{equation}
+
+\end_inset
+
+and the flux is 
+\begin_inset Formula 
+\begin{equation}
+\Psi_{g}v_{g}S=\left(\Psi_{\text{up}}+1\right)v_{g}S
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Flux Corrected Transport
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Zal79"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{equation}
+{\textstyle \frac{\partial\Psi}{\partial t}=-\nabla\cdot\left(\mathbf{u}\Psi\right)}
+\end{equation}
+
+\end_inset
+
+ is first updated with a monotonic scheme such as explicit upwind:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{td}=\Psi^{n}-\frac{\Delta t}{V}\left(\sum_{\text{outward}}F^{L}-\sum_{\text{inward}}F^{L}\right)
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $F^{L}=\Psi\mathbf{u}\cdot\mathbf{S}$
+\end_inset
+
+ are the low-order fluxes at the faces and 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ either points inwards or outwards.
+ The anti-diffusive fluxes, 
+\begin_inset Formula $A$
+\end_inset
+
+, are the difference between a high order flux, 
+\begin_inset Formula $F^{H}$
+\end_inset
+
+, and the low order flux
+\begin_inset Formula 
+\begin{equation}
+A=F^{H}-F^{L}.
+\end{equation}
+
+\end_inset
+
+First we ensure that anti-diffusive fluxes are up gradient:
+\begin_inset Formula 
+\begin{equation}
+A=0\ \text{if }A\nabla_{n}\Psi^{td}<0.
+\end{equation}
+
+\end_inset
+
+Next we calculate the local maxima and minima of 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ for each cell, 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\Psi_{i}^{\max} & = & \max\left(\Psi_{i}^{n},\Psi_{i}^{td}\right)\\
+\Psi_{i}^{\max} & = & \max\left(\Psi_{i}^{\max},\Psi_{N}^{\max}\right)\\
+\Psi_{i}^{\min} & = & \min\left(\Psi_{i}^{n},\Psi_{i}^{td}\right)\\
+\Psi_{i}^{\min} & = & \min\left(\Psi_{i}^{\min},\Psi_{N}^{\min}\right)
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ are all the neighbour cells of 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Next we calculate limits, 
+\begin_inset Formula $C$
+\end_inset
+
+, on flux corrections to ensure monotonicity.
+ These will be used to ensure that 
+\begin_inset Formula $\Psi^{n+1}$
+\end_inset
+
+ is monotonic when calculated as:
+\begin_inset Formula 
+\begin{equation}
+\Psi^{n+1}=\Psi^{td}-\frac{\Delta t}{V}\left(\sum_{\text{outward}}CA-\sum_{\text{inward}}CA\right).
+\end{equation}
+
+\end_inset
+
+These are calculated using:
+\begin_inset Formula 
+\begin{eqnarray*}
+P^{+} & = & \frac{\Delta t}{V}\left(-\sum_{\text{outward}}\max\left(A,0\right)+\sum_{\text{inward}}\max\left(A,0\right)\right)\\
+Q^{+} & = & \Psi^{\max}-\Psi^{td}\\
+R^{+} & = & \begin{cases}
+\min\left(1,Q^{+}/P^{+}\right) & \text{if }P^{+}>0\\
+0 & \text{otherwise}
+\end{cases}\\
+P^{-} & = & \frac{\Delta t}{V}\left(\sum_{\text{outward}}\min\left(A,0\right)-\sum_{\text{inward}}\min\left(A,0\right)\right)\\
+Q^{-} & = & \Psi^{td}-\Psi^{\min}\\
+R^{-} & = & \begin{cases}
+\min\left(1,Q^{-}/P^{-}\right) & \text{if }P^{-}>0\\
+0 & \text{otherwise}
+\end{cases}\\
+C & = & \begin{cases}
+\min\left(R^{-},R_{N}^{+}\right) & \text{if }A>0\\
+\min\left(R^{+},R_{N}^{-}\right) & \text{if }A<0
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+MPDATA with FCT
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SG90"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "numerics"
+options "abbrvnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

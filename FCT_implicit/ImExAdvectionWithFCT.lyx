@@ -1,0 +1,446 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{slashbox,afterpage}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement !h
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\biblio_options round
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Implicit-Explicit Advection with/without FCT
+\end_layout
+
+\begin_layout Author
+Hilary Weller 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+<h.weller@reading.ac.uk>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To solve the one-dimensional linear advection equation on a non-uniform grid 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\psi}{\partial t}+\frac{\partial}{\partial x}\left(u\psi\right)=0
+\end{equation}
+
+\end_inset
+
+on a finite volume grid with cells indexed by 
+\begin_inset Formula $j$
+\end_inset
+
+ of size 
+\begin_inset Formula $\Delta x_{j}$
+\end_inset
+
+ so that 
+\begin_inset Formula $\psi_{j}$
+\end_inset
+
+ is the volume average 
+\begin_inset Formula $\psi$
+\end_inset
+
+ in cell 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ Fluxes,
+ 
+\begin_inset Formula $F_{j+1/2}$
+\end_inset
+
+ are at the interfaces between cells:
+\begin_inset Formula 
+\begin{eqnarray}
+F_{j+1/2} & = & u_{j+1/2}\psi_{j+1/2}\\
+\text{so that }\psi_{j}^{n+1} & = & \psi_{j}-\frac{\Delta t}{\Delta x_{j}}\left(F_{j+1/2}-F_{j-1/2}\right)
+\end{eqnarray}
+
+\end_inset
+
+and the determination of 
+\begin_inset Formula $\psi_{j+1/2}$
+\end_inset
+
+ defines the advection scheme.
+\end_layout
+
+\begin_layout Section
+First-order Monotonic Solution
+\end_layout
+
+\begin_layout Standard
+If flux corrected transport 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Zal79"
+literal "false"
+
+\end_inset
+
+ is needed,
+ then the first step is the solution of the ImEx monotonic solution denoted 
+\begin_inset Formula $\psi^{d}$
+\end_inset
+
+.
+ First define the face Courant number,
+ 
+\begin_inset Formula $c_{j+1/2}$
+\end_inset
+
+ and the face off-centering,
+ 
+\begin_inset Formula $\theta_{j+1/2}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+c_{j+1/2} & = & u_{j+1/2}\Delta t/\Delta x_{j+1/2}\\
+\Delta x_{j+1/2} & = & \text{TO BE DETERMINED}\\
+\theta_{j+1/2} & = & \max\left(0,1-\frac{1}{|c_{j+1/2}|}\right).
+\end{eqnarray}
+
+\end_inset
+
+Now we can define the trapezoidal implicit upwind equation to solve for 
+\begin_inset Formula $\psi^{d}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{d} & = & \psi_{j}^{n}-\frac{\Delta t}{\Delta x_{j}}\left(F_{j+1/2}^{d}-F_{j-1/2}^{d}\right)\\
+\text{where }F_{j+1/2}^{d} & = & \left(1-\theta_{j+1/2}\right)u_{j+1/2}\psi_{u,j+1/2}^{n}+\theta_{j+1/2}u_{j+1/2}\psi_{u,j+1/2}^{d}\\
+\psi_{u,j+1/2} & = & \begin{cases}
+\psi_{j} & u_{j+1/2}\ge0\\
+\psi_{j+1} & \text{otherwise}
+\end{cases}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Explicit Advection
+\end_layout
+
+\begin_layout Standard
+The usual explicit advection scheme (eg.
+ PPM),
+ without monotonicity constraints,
+ is applied using the fraction of the velocity that can be handled explicitly,
+ so first the velocity field is decomposed into implicit and explicit components:
+\begin_inset Formula 
+\begin{eqnarray}
+u_{E,j+1/2} & = & \text{sign}\left(u_{j+1/2}\right)\min\left(\frac{\Delta x_{j+1/2}}{\Delta t},\ |u_{j+1/2}|\right)\\
+u_{I,j+1/2} & = & u_{j+1/2}-u_{E,j+1/2}.
+\end{eqnarray}
+
+\end_inset
+
+Component of the wind 
+\begin_inset Formula $u_{E,j+1/2}$
+\end_inset
+
+ is then used in the normal (high-order) advection scheme to update 
+\begin_inset Formula $\psi$
+\end_inset
+
+ from 
+\begin_inset Formula $\psi^{n}$
+\end_inset
+
+ to 
+\begin_inset Formula $\psi^{e}$
+\end_inset
+
+ with fluxes 
+\begin_inset Formula $F^{e}$
+\end_inset
+
+ specific to the scheme:
+\begin_inset Formula 
+\begin{equation}
+\psi_{j}^{e}=\psi_{j}^{n}-\frac{\Delta t}{\Delta x_{j}}\left(F_{j+1/2}^{e}-F_{j-1/2}^{e}\right).
+\end{equation}
+
+\end_inset
+
+Note that 
+\begin_inset Formula $u_{E}$
+\end_inset
+
+ could be highly divergent so no attempt should be made to make 
+\begin_inset Formula $\psi^{e}$
+\end_inset
+
+ monotonic.
+\end_layout
+
+\begin_layout Section
+Implicit Advection
+\end_layout
+
+\begin_layout Standard
+Next the implicit scheme updates 
+\begin_inset Formula $\psi$
+\end_inset
+
+ from 
+\begin_inset Formula $\psi^{e}$
+\end_inset
+
+ to 
+\begin_inset Formula $\psi^{i}$
+\end_inset
+
+ using velocity 
+\begin_inset Formula $u_{I}$
+\end_inset
+
+.
+ If FCT is not used then this is the final solution (
+\begin_inset Formula $\psi^{n+1}=\psi^{i}$
+\end_inset
+
+).
+ However if FCT is applied then 
+\begin_inset Formula $\psi^{i}$
+\end_inset
+
+ is the high-order solution to be limited.
+ This implicit update is based on infinite gauge implicit MPDATA 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "WWKS23"
+literal "false"
+
+\end_inset
+
+.
+ The implicit update is
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{i} & = & \psi_{j}^{e}-\frac{\Delta t}{\Delta x_{j}}\left(F_{j+1/2}^{i}-F_{j-1/2}^{i}\right)\label{eq:implicitUpdate}\\
+\text{where }F_{j+1/2}^{i} & = & \left(1-\theta_{j+1/2}\right)u_{I,j+1/2}\psi_{u,j+1/2}^{e}+\theta_{j+1/2}u_{I,j+1/2}\psi_{u,j+1/2}^{i}\\
+ & + & \frac{1}{2}u_{I,j+1/2}\left(\text{sign}\left(c_{I,j+1/2}\right)-\chi_{j+1/2}c_{I,j+1/2}\right)\left(\psi_{j+1}^{e}-\psi_{j}^{e}\right)\\
+\text{where }c_{I,j+1/2} & = & u_{I,j+1/2}\frac{\Delta t}{\Delta x_{j+1/2}}\\
+\theta_{j+1/2} & = & \max\left(0,1-\frac{1}{|c_{I,j+1/2}|}\right)\\
+\chi_{j+1/2} & = & \max\left(0,1-2\theta_{j+1/2}\right).
+\end{eqnarray}
+
+\end_inset
+
+This should be close to second-order accurate in space and time for 
+\begin_inset Formula $c\le2$
+\end_inset
+
+ with accuracy dropping to first-order for 
+\begin_inset Formula $c>2$
+\end_inset
+
+.
+ If FCT is to be applied,
+ then the high-order fluxes to be limited are
+\begin_inset Formula 
+\begin{equation}
+F^{H}=F^{e}+F^{i}
+\end{equation}
+
+\end_inset
+
+but noting that the implicit fluxes should not be recalculated after the implicit solution of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:implicitUpdate"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) since (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:implicitUpdate"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) may not be solved to convergence.
+ Instead the fluxes that were used to solve (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:implicitUpdate"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) are needed.
+\end_layout
+
+\begin_layout Section
+Applying FCT
+\end_layout
+
+\begin_layout Standard
+If FCT is applied then the final solution will be
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n+1} & = & \psi_{j}^{d}-\frac{\Delta t}{\Delta x_{j}}\left(C_{j+1/2}A_{j+1/2}-C_{j-1/2}A_{j-1/2}\right)
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $A_{j+1/2}$
+\end_inset
+
+ are the ante-diffusive fluxes:
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{j+1/2} & = & F^{e}+F^{i}-F^{d}
+\end{eqnarray*}
+
+\end_inset
+
+ and 
+\begin_inset Formula $C_{j+1/2}$
+\end_inset
+
+ is the flux limiter as defined by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Zal79"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "numerics"
+options "abbrvnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
