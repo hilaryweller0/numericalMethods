@@ -1,63 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 from matplotlib import colors
-if not os.path.exists('plots'):
-    os.makedirs('plots')
-
-from numpy import exp, pi, cos
-
-def saveFig(name):
-    fileName='plots/'+name+'.pdf'
-    print(fileName)
-    plt.savefig(fileName)
-    os.system("pdfCrop " + fileName + " > /dev/null 2>&1" )
-    #os.system("evince " + fileName + " > /dev/null 2>&1 &")
-    plt.clf()
-
-# Candidate schemes for alpha as a function of c and chi as a function of alpha
-def alphaFromc(c):
-    return np.maximum(0, 1-1/c)
-
-def chiFromC(c):
-    return np.minimum(np.maximum(2/c-1, 0), 1)
-
-def chiFromAlpha(a):
-    return np.minimum(np.maximum(1 - 2*a, 0), 1)
-
-# Maximum magnitude of the amplification factor for the full implicit scheme
-def magA_full(c, a, chi):
-    """ c is the Courant number
-        a is the off-centering
-        chi is the temporal high order limiter"""
-    kdxs = np.linspace(0, 2*pi, 37)
-    maxMag = 0
-    for ik in range(len(kdxs)):
-        kdx = kdxs[ik]
-        A = (1 - (1-a)*c*(1 - exp(-1j*kdx)) - 
-                  (1-a)*0.5*c*(1-chi*c)*(exp(1j*kdx) - 2 + exp(-1j*kdx))) \
-            / (1 + a*c*(1 - exp(-1j*kdx)) 
-                   + a*0.5*c*(1+chi*c)*(exp(1j*kdx) - 2 + exp(-1j*kdx)))
-        maxMag = max(maxMag, abs(A))
-    return maxMag
-
-# Maximum magnitude of the amplification factor for predictor-corrector scheme
-def magA_PC(c, a, chi, kmax):
-    """ c is the Courant number
-        a is the off-centering
-        chi is the temporal high order limiter
-        kmax is the number of predictor-corrector iterations"""
-    kdxs = np.linspace(0, 2*pi, 36)
-    maxMag = 0
-    for ik in range(len(kdxs)):
-        kdx = kdxs[ik]
-        A = 1 + 0*1j
-        for k in range(kmax):
-            A = (1 - (1-a)*c*(1 - exp(-1j*kdx))
-            + c*(1-cos(kdx))*((1-a)*(1-chi*c) + a*(1+chi*c)*A)) \
-                   / (1 + a*c*(1 - exp(-1j*kdx)))
-        maxMag = max(maxMag, abs(A))
-    return maxMag
+from LWstabilityFunctions import *
+from stabilityFunctions import *
 
 # Constants for all plots
 cs = 10**(np.linspace(-1, 1, 81))
@@ -71,8 +16,23 @@ levels=np.arange(0.9, 1.9, 0.1)
 cnorm = colors.BoundaryNorm(levels, 150)
 
 # x-y graphs of fully implicit scheme
-#plt.semilogx(cs, magA_full(cs, 0.5, 1))
-#plt.show()
+plt.semilogx(cs, [magA_full(c, 0.5, 1) for c in cs], 'k', 
+            label=r'$\alpha=0.5,\ \chi=1$')
+plt.semilogx(cs, [magA_full(c, 0.5, 0) for c in cs], 'k--', 
+            label=r'$\alpha=0.5,\ \chi=0$')
+plt.semilogx(cs, [magA_full(c, 0, 1) for c in cs], 'r', 
+            label=r'$\alpha=0,\ \chi=1$')
+plt.semilogx(cs, [magA_full(c, 0, 0) for c in cs], 'r--', 
+            label=r'$\alpha=0,\ \chi=0$')
+plt.semilogx(cs, [magA_full(c, 1, 1) for c in cs], 'b', 
+            label=r'$\alpha=1,\ \chi=1$')
+plt.semilogx(cs, [magA_full(c, 1, 0) for c in cs], 'b--', 
+            label=r'$\alpha=1,\ \chi=0$')
+plt.legend()
+plt.ylim([0.95,1.3])
+plt.xlabel(r'$c$')
+plt.ylabel(r'max $|A|$')
+saveFig("magA_full")
 
 # magA for fully implicit with various chi
 for chi in [0,0.5,1]:

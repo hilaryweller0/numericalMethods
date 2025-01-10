@@ -1,0 +1,1806 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip halfline
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Lax-Wendroff ImEx Schemes
+\end_layout
+
+\begin_layout Standard
+To solve
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\psi}{\partial t}=-u\frac{\partial\psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+with 
+\begin_inset Formula $c=\Delta t\ u/\Delta x$
+\end_inset
+
+ on a uniform grid.
+\end_layout
+
+\begin_layout Section
+Second-order Lax-Wendroff
+\end_layout
+
+\begin_layout Subsection
+Derivations
+\end_layout
+
+\begin_layout Subsubsection
+Explicit
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n}}{\partial t}+\Delta t^{2}\frac{\partial^{2}\psi_{j}^{n}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
+ & = & \psi_{j}^{n}-u\Delta t\frac{\partial\psi_{j}^{n}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial x^{2}}+O\left(\Delta t^{2}\right)\\
+ & \approx & \psi_{j}^{n}-\frac{c}{2}\left(\psi_{j+1}^{n}-\psi_{j-1}^{n}\right)+\frac{c^{2}}{2}\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)+O\left(\Delta t^{2},\Delta x^{2}\right)\\
+ & = & \psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{c\left(1-c\right)}{2}\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)
+\end{eqnarray*}
+
+\end_inset
+
+which is stable for 
+\begin_inset Formula $c\le1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Implicit
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n} & = & \psi_{j}^{n+1}-\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial t}+\Delta t^{2}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
+ & = & \psi_{j}^{n+1}+u\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial x^{2}}+O\left(\Delta t^{2}\right)\\
+ & = & \psi_{j}^{n+1}+\frac{c}{2}\left(\psi_{j+1}^{n+1}-\psi_{j-1}^{n+1}\right)+\frac{c^{2}}{2}\left(\psi_{j+1}^{n+1}-2\psi_{j}^{n+1}+\psi_{j-1}^{n+1}\right)+O\left(\Delta t^{2},\Delta x^{2}\right)\\
+\implies\psi_{j}^{n+1} & \approx & \psi_{j}^{n}-\frac{c}{2}\left(\psi_{j+1}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c^{2}}{2}\left(\psi_{j+1}^{n+1}-2\psi_{j}^{n+1}+\psi_{j-1}^{n+1}\right)\\
+ & = & \psi_{j}^{n}-c\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c\left(1+c\right)}{2}\left(\psi_{j+1}^{n+1}-2\psi_{j}^{n+1}+\psi_{j-1}^{n+1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+which is stable for 
+\begin_inset Formula $c\ge1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Implicit-Explicit Stability
+\end_layout
+
+\begin_layout Subsubsection
+Full Implicit Version
+\end_layout
+
+\begin_layout Standard
+Any linear combination,
+ with off-centering 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ will also be second-order:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n+1}=\psi_{j}^{n} & - & \left(1-\alpha\right)c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\left(1-\alpha\right)\frac{c\left(1-\chi c\right)}{2}\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)\label{eq:LW2_ImEx}\\
+ & - & \alpha c\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\alpha\frac{c\left(1+\chi c\right)}{2}\left(\psi_{j+1}^{n+1}-2\psi_{j}^{n+1}+\psi_{j-1}^{n+1}\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+Limiter,
+ 
+\begin_inset Formula $\chi\in\left[0,1\right]$
+\end_inset
+
+,
+ controls how much of the temporal high-order correction is used.
+ The maximum over all 
+\begin_inset Formula $k\Delta x\in\left[0,2\pi\right]$
+\end_inset
+
+ of the magnitude of the amplification factor for a range of 
+\begin_inset Formula $c$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is given in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:A_LW2ImEx"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ which shows that the scheme is unconditionally stable only for 
+\begin_inset Formula $\alpha=\frac{1}{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_alpha_chi_0.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_alpha_chi_1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi=0.5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha=\max\left(0,1-1/c\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_alpha_chi_0.5.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_chi.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_full.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Maximum over 
+\begin_inset Formula $k\Delta x\in\left[0,2\pi\right]$
+\end_inset
+
+ of the magnitude of the amplification factor for the second-order Lax-Wendroff ImEx scheme from (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:LW2_ImEx"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:A_LW2ImEx"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The problems with scheme (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:LW2_ImEx"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) are:
+\end_layout
+
+\begin_layout Enumerate
+The matrix is not diagonally dominant:
+ all of the corrections on first-order need to be explicit.
+\end_layout
+
+\begin_layout Enumerate
+We want 
+\begin_inset Formula $\alpha=0$
+\end_inset
+
+ for 
+\begin_inset Formula $c\le1$
+\end_inset
+
+.
+ We want something like 
+\begin_inset Formula $\alpha=\max\left(0,1-1/c\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+We may want reduced order of accuracy in time for 
+\begin_inset Formula $c>2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+You have to switch to 
+\end_layout
+
+\begin_layout Subsubsection
+Predictor-Corrector Scheme
+\end_layout
+
+\begin_layout Standard
+We can write the high-order correction terms as explicit corrections,
+ using iterations counted by 
+\begin_inset Formula $k$
+\end_inset
+
+,
+ so that for 
+\begin_inset Formula $k=0$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\psi^{k}=\psi^{(n)}$
+\end_inset
+
+ and the final iteration gives us 
+\begin_inset Formula $\psi^{(n+1)}$
+\end_inset
+
+.
+ For 
+\begin_inset Formula $k\ge1$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{k}=\psi_{j}^{0} & - & \left(1-\alpha\right)c\left(\psi_{j}^{0}-\psi_{j-1}^{0}\right)-\alpha c\left(\psi_{j}^{k}-\psi_{j-1}^{k}\right)\label{eq:LW2_ImEx_corr}\\
+ & - & \left(1-\alpha\right)\frac{c\left(1-\chi c\right)}{2}\left(\psi_{j+1}^{0}-2\psi_{j}^{0}+\psi_{j-1}^{0}\right)\nonumber \\
+ & - & \alpha\frac{c\left(1+\chi c\right)}{2}\left(\psi_{j+1}^{k-1}-2\psi_{j}^{k-1}+\psi_{j-1}^{k-1}\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+This means that the amplification factor for iteration 
+\begin_inset Formula $k$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{k} & = & 1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)-\alpha cA^{k}\left(1-e^{-ik\Delta x}\right)\\
+ & + & \left(1-\alpha\right)c\left(1-\chi c\right)\left(1-\cos k\Delta x\right)\\
+ & + & \alpha c\left(1+\chi c\right)A^{k-1}\left(1-\cos k\Delta x\right)\\
+\implies A^{k} & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)+c\left(1-\cos k\Delta x\right)\left\{ \left(1-\alpha\right)\left(1-\chi c\right)+\alpha\left(1+\chi c\right)A^{k-1}\right\} }{1+\alpha c\left(1-e^{-ik\Delta x}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+remembering that 
+\begin_inset Formula $A^{k=0}=1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $k=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+ this simplifies to
+\begin_inset Formula 
+\begin{eqnarray}
+A^{1} & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)+c\left(1-\cos k\Delta x\right)\left\{ \left(1-\alpha\right)\left(1-c\right)+\alpha\left(1+c\right)\right\} }{1+\alpha c\left(1-e^{-ik\Delta x}\right)}\\
+ & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)+c\left(1-\cos k\Delta x\right)\left\{ 1-c+2\alpha c\right\} }{1+\alpha c\left(1-e^{-ik\Delta x}\right)}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=2$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_alpha_chi1k1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_alpha_chi1k2.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\alpha=\max\left(0,1-1/c\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=2$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\alpha=\max\left(0,1-1/c\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_k_1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/magA_c_k_2.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Maximum amplitude of the amplification factor for predictor-corrector versions.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:maxA_PC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Warming and Beam
+\end_layout
+
+\begin_layout Subsection
+Explicit Scheme
+\end_layout
+
+\begin_layout Standard
+Second-order Warming and Beam expressed as a finite volume and finite difference scheme is
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}-\Delta t\frac{u\psi_{j+1/2}-u\psi_{j-1/2}}{\Delta x}\\
+\text{where }\psi_{j+1/2} & = & \frac{1}{2}\left(3-c\right)\psi_{j}^{n}-\frac{1}{2}\left(1-c\right)\psi_{j-1}^{n}\\
+\implies\psi_{j}^{n+1} & = & \psi_{j}^{n}-\frac{c}{2}\left(3\psi_{j}^{n}-4\psi_{j-1}^{n}+\psi_{j-2}^{n}\right)+\frac{c^{2}}{2}\left(\psi_{j}^{n}-2\psi_{j-1}^{n}+\psi_{j-2}^{n}\right)\\
+ & = & \psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{c}{2}\left(1-c\right)\left(\psi_{j}^{n}-2\psi_{j-1}^{n}+\psi_{j-2}^{n}\right)
+\end{eqnarray}
+
+\end_inset
+
+which is a second-order spatial discretisation for 
+\begin_inset Formula $\frac{\partial\psi_{j}^{n}}{\partial x}$
+\end_inset
+
+ with a diffusive temporal correction offset upstream in space.
+\end_layout
+
+\begin_layout Subsection
+Implicit Scheme
+\end_layout
+
+\begin_layout Standard
+Derived similarly to Lax-Wendroff
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n} & = & \psi_{j}^{n+1}-\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial t}+\Delta t^{2}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
+ & = & \psi_{j}^{n+1}+u\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial x^{2}}+O\left(\Delta t^{2}\right)\\
+ & = & \psi_{j}^{n+1}+\frac{c}{2}\left(3\psi_{j}^{n+1}-4\psi_{j-1}^{n+1}+\psi_{j-2}^{n+1}\right)+\frac{c^{2}}{2}\left(\psi_{j}^{n+1}-2\psi_{j-1}^{n+1}+\psi_{j-2}^{n+1}\right)\\
+\implies\psi_{j}^{n+1} & \approx & \psi_{j}^{n}-\frac{c}{2}\left(3\psi_{j}^{n+1}-4\psi_{j-1}^{n+1}+\psi_{j-2}^{n+1}\right)-\frac{c^{2}}{2}\left(\psi_{j}^{n+1}-2\psi_{j-1}^{n+1}+\psi_{j-2}^{n+1}\right)\\
+ & = & \psi_{j}^{n}-c\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c\left(1+c\right)}{2}\left(\psi_{j}^{n+1}-2\psi_{j-1}^{n+1}+\psi_{j-2}^{n+1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Implicit-Explicit Scheme
+\end_layout
+
+\begin_layout Standard
+Put the flux limiter,
+ 
+\begin_inset Formula $\chi$
+\end_inset
+
+ outside the whole high-order correction:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{n+1}=\psi_{j}^{n} & - & \left(1-\alpha\right)c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\chi\left(1-\alpha\right)\frac{c\left(1-c\right)}{2}\left(\psi_{j}^{n}-2\psi_{j-1}^{n}+\psi_{j-2}^{n}\right)\label{eq:WB2_ImEx}\\
+ & - & \alpha c\left(\psi_{j}^{n+1}-\psi_{j-1}^{n+1}\right)-\chi\alpha\frac{c\left(1+c\right)}{2}\left(\psi_{j}^{n+1}-2\psi_{j-1}^{n+1}+\psi_{j-2}^{n+1}\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Predictor-Corrector Version
+\end_layout
+
+\begin_layout Standard
+For iteration 
+\begin_inset Formula $k$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{j}^{k+1}=\psi_{j}^{n} & - & \left(1-\alpha\right)c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\chi\left(1-\alpha\right)\frac{c\left(1-c\right)}{2}\left(\psi_{j}^{n}-2\psi_{j-1}^{n}+\psi_{j-2}^{n}\right)\label{eq:WB2_ImEx-PC}\\
+ & - & \alpha c\left(\psi_{j}^{k+1}-\psi_{j-1}^{k+1}\right)-\chi\alpha\frac{c\left(1+c\right)}{2}\left(\psi_{j}^{k}-2\psi_{j-1}^{k}+\psi_{j-2}^{k}\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Stability
+\end_layout
+
+\begin_layout Standard
+The amplicifation factor of the full implicit-explicit scheme is
+\begin_inset Formula 
+\begin{eqnarray*}
+A=1 & - & \left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)-\chi\left(1-\alpha\right)\frac{c\left(1-c\right)}{2}\left(1-2e^{-ik\Delta x}+e^{-2ik\Delta x}\right)\\
+ & - & \alpha cA\left(1-e^{-ik\Delta x}\right)-\chi\alpha\frac{c\left(1+c\right)}{2}A\left(1-2e^{-ik\Delta x}+e^{-i2k\Delta x}\right)\\
+\implies A & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)-\chi\left(1-\alpha\right)\frac{c\left(1-c\right)}{2}\left(1-2e^{-ik\Delta x}+e^{-i2k\Delta x}\right)}{1+\alpha c\left(1-e^{-ik\Delta x}\right)+\chi\alpha\frac{c\left(1+c\right)}{2}\left(1-2e^{-ik\Delta x}+e^{-2ik\Delta x}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+To find the necessary 
+\begin_inset Formula $\alpha\left(c\right)$
+\end_inset
+
+ for stability,
+ assume 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $k\Delta x=\pi\implies e^{-ik\Delta x}=-1,\ e^{-2ik\Delta x}=1$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\implies A & = & \frac{1-2\left(1-\alpha\right)c-2\left(1-\alpha\right)c\left(1-c\right)}{1+2\alpha c+2\alpha c\left(1+c\right)}\\
+ & = & \frac{1-2\left(1-\alpha\right)c\left(2-c\right)}{1+4\alpha c+2\alpha c^{2}}\le d\\
+\iff &  & 1-2c\left(1-\alpha\right)\left(2-c\right)\le d\left(1+4\alpha c+2\alpha c^{2}\right)\\
+\iff &  & 1-4c+4\alpha c+2c^{2}-2\alpha c^{2}\le d+4\alpha cd+2\alpha c^{2}d\\
+\iff &  & 2\alpha c\left(2d+cd-2+c\right)\ge1-4c+2c^{2}-d\\
+\iff\alpha & \ge & \frac{1-d+2c\left(c-2\right)}{2c\left(d\left(c+2\right)+c-2\right)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBmagA_c_alpha_chi_0.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBmagA_c_alpha_chi_1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha=\max\left(0,1-1/c\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBmagA_c_chi.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Maximum over 
+\begin_inset Formula $k\Delta x\in\left[0,2\pi\right]$
+\end_inset
+
+ of the magnitude of the amplification factor for the second-order Warming and Bean ImEx scheme from (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:WB2_ImEx"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:A_WB2ImEx"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha=1-1/c$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha=\left(\frac{1}{2}+10^{-6}\right)\frac{c-2}{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBmagA_kdx_c_a1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBmagA_kdx_c_a2.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha=\frac{c-1.9}{2c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBmagA_kdx_c_a3.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Magnitude of the amplification factor for the second-order Warming and Beam ImEx scheme from (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:WB2_ImEx"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:A_WB2ImEx-alpha"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The amplification factor for iteration 
+\begin_inset Formula $k$
+\end_inset
+
+ of the predictor-corrector implicit-explicit scheme is
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{k}=1 & - & \left(1-\alpha\right)c\left(1-e^{-k\Delta x}\right)-\chi\left(1-\alpha\right)\frac{c\left(1-c\right)}{2}\left(1-2e^{-k\Delta x}+e^{-2k\Delta x}\right)\\
+ & - & \alpha cA\left(1-e^{-k\Delta x}\right)-\chi\alpha\frac{c\left(1+c\right)}{2}A^{k-1}\left(1-2e^{-k\Delta x}+e^{-2k\Delta x}\right)\\
+\implies A^{k} & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-k\Delta x}\right)-\chi\frac{c}{2}\left\{ \left(1-\alpha\right)\left(1-c\right)+\alpha\left(1+c\right)A^{k-1}\right\} \left(1-2e^{-k\Delta x}+e^{-2k\Delta x}\right)}{1+\alpha c\left(1-e^{-k\Delta x}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=2$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBPCmagA_kdx_c_chi1_k1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBPCmagA_kdx_c_chi1_k2.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=2$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=0,1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k=2$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\chi=0,\ \frac{2c-1}{3\left(c-1\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBPCmagA_kdx_c_k2chi_1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/WBPCmagA_kdx_c_k2chi_-1.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Maximum amplitude of the amplification factor for predictor-corrector versions with 
+\begin_inset Formula $\alpha=1-1/c$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:maxA_WB_PC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We need to find the limit on 
+\begin_inset Formula $\chi$
+\end_inset
+
+ for stability.
+ Assume:
+\begin_inset Formula 
+\begin{eqnarray*}
+c & \ge & 1\\
+\alpha & = & 1-\frac{1}{c}\implies1-\alpha=\frac{1}{c},\\
+ &  & \left(1-\alpha\right)c=1,\ \left(1-\alpha\right)\left(1-c\right)=\frac{1}{c}-1\\
+ &  & \alpha\left(1+c\right)=\left(1-\frac{1}{c}\right)\left(1+c\right)=c-\frac{1}{c}\ \alpha c=c-1\\
+k\Delta x & = & \pi\implies e^{-k\Delta x}=-1,\ e^{-2k\Delta x}=1,\\
+\implies A^{k+1} & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-k\Delta x}\right)-\chi\frac{c}{2}\left\{ \left(1-\alpha\right)\left(1-c\right)+\alpha\left(1+c\right)A^{k-1}\right\} \left(1-2e^{-k\Delta x}+e^{-2k\Delta x}\right)}{1+\alpha c\left(1-e^{-k\Delta x}\right)}\\
+ & = & \frac{-1-2\chi\left\{ 1-c+\left(c^{2}-1\right)A^{k}\right\} }{2c-1}\\
+\implies A^{1} & = & \frac{-1-2\chi c\left\{ c-1\right\} }{2c-1}\\
+A^{1} & \ge & -1\\
+\iff &  & -1-2\chi c\left\{ c-1\right\} \ge1-2c\\
+\iff &  & \chi c\left\{ c-1\right\} \le c-1\\
+\iff &  & \chi\le\frac{1}{c}
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $A^{1}=-1$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{2} & = & \frac{-1+2\chi\left\{ c^{2}+c-2\right\} }{2c-1}\\
+A^{2} & \ge & -1\\
+\iff &  & -1+2\chi\left\{ c^{2}+c-2\right\} \ge-2c+1\\
+\iff &  & \chi\left\{ c^{2}+c-2\right\} \ge-c+1\\
+\iff &  & \chi\ge\frac{1-c}{c^{2}+c-2}=\frac{-1}{c+2}\\
+A^{2} & \le & 1\\
+\iff &  & -1+2\chi\left\{ c^{2}+c-2\right\} \le2c-1\\
+\iff &  & \chi\le\frac{c}{c^{2}+c-2}=\frac{c}{\left(c-1\right)\left(c+2\right)}\\
+ &  & =\frac{2}{3}\text{ for }c=2.
+\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $\chi=0$
+\end_inset
+
+ for 
+\begin_inset Formula $k=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\implies A^{1}=\frac{-1}{2c-1}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{2} & = & \frac{-1-2\chi\left\{ 1-c-\frac{c^{2}-1}{2c-1}\right\} }{2c-1}
+\end{eqnarray*}
+
+\end_inset
+
+To get 
+\begin_inset Formula $A^{2}\le d$
+\end_inset
+
+ for some damping of grid-scale waves:
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{2} & = & \frac{-1-2\chi\left\{ 1-c-\frac{c^{2}-1}{2c-1}\right\} }{2c-1}\le d\\
+\iff &  & 2\chi\left\{ \left(c-1\right)\left(2c-1\right)+c^{2}-1\right\} \le\left(2c-1\right)\left(d\left(2c-1\right)+1\right)\\
+\iff &  & \chi\le\frac{\left(2c-1\right)\left(d\left(2c-1\right)+1\right)}{6c\left(c-1\right)}\\
+\text{For }d=1 &  & \chi\le\frac{2c-1}{3\left(c-1\right)}\\
+\text{For }d=0 &  & \chi\le\frac{2c-1}{6c\left(c-1\right)}\\
+\text{For }d=\frac{1}{2} &  & \chi\le\frac{\left(2c-1\right)\left(2c+1\right)}{12c\left(c-1\right)}\\
+c=2 & \implies & \chi=\frac{3d+1}{4}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Numerical Results
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Full ImEx WB,
+ 
+\begin_inset Formula $\alpha=\frac{c-1.9}{2c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Full ImEx WB,
+ 
+\begin_inset Formula $\alpha=1-1/c$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/WB_ImEx_a2.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/WB_ImEx.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Full ImEx WB,
+ 
+\begin_inset Formula $\alpha=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Full ImEx WB,
+ 
+\begin_inset Formula $\alpha=1/2$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/WB_ImEx_a1.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/WB_ImEx_a05.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Full ImEx WB,
+ 
+\begin_inset Formula $\alpha=1-1/c$
+\end_inset
+
+,
+ 
+\begin_inset Formula $d=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/WBPC_ImEx_d0.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+One revolution of a periodic domain
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:periodAdvection"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/l2errorsVdxdt.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename implementations/plots/l2errorsVdx.pdf
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Convergence with resolution for WB ImEx,
+ one revolution starting from pure wave.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:WB_converge"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
