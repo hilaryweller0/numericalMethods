@@ -30,7 +30,7 @@
 \output_sync 0
 \bibtex_command default
 \index_command default
-\float_placement class
+\float_placement H
 \float_alignment class
 \paperfontsize 12
 \spacing single
@@ -127,7 +127,7 @@ Explicit
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n}}{\partial t}+\Delta t^{2}\frac{\partial^{2}\psi_{j}^{n}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n}}{\partial t}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
  & = & \psi_{j}^{n}-u\Delta t\frac{\partial\psi_{j}^{n}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial x^{2}}+O\left(\Delta t^{2}\right)\\
  & \approx & \psi_{j}^{n}-\frac{c}{2}\left(\psi_{j+1}^{n}-\psi_{j-1}^{n}\right)+\frac{c^{2}}{2}\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)+O\left(\Delta t^{2},\Delta x^{2}\right)\\
  & = & \psi_{j}^{n}-c\left(\psi_{j}^{n}-\psi_{j-1}^{n}\right)-\frac{c\left(1-c\right)}{2}\left(\psi_{j+1}^{n}-2\psi_{j}^{n}+\psi_{j-1}^{n}\right)
@@ -149,7 +149,7 @@ Implicit
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\psi_{j}^{n} & = & \psi_{j}^{n+1}-\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial t}+\Delta t^{2}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
+\psi_{j}^{n} & = & \psi_{j}^{n+1}-\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial t}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial t^{2}}+O\left(\Delta t^{2}\right)\\
  & = & \psi_{j}^{n+1}+u\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial x^{2}}+O\left(\Delta t^{2}\right)\\
  & = & \psi_{j}^{n+1}+\frac{c}{2}\left(\psi_{j+1}^{n+1}-\psi_{j-1}^{n+1}\right)+\frac{c^{2}}{2}\left(\psi_{j+1}^{n+1}-2\psi_{j}^{n+1}+\psi_{j-1}^{n+1}\right)+O\left(\Delta t^{2},\Delta x^{2}\right)\\
 \implies\psi_{j}^{n+1} & \approx & \psi_{j}^{n}-\frac{c}{2}\left(\psi_{j+1}^{n+1}-\psi_{j-1}^{n+1}\right)-\frac{c^{2}}{2}\left(\psi_{j+1}^{n+1}-2\psi_{j}^{n+1}+\psi_{j-1}^{n+1}\right)\\
@@ -838,7 +838,8 @@ Stability
 \end_layout
 
 \begin_layout Standard
-The amplicifation factor of the full implicit-explicit scheme is
+The amplicifation factor of the full implicit-explicit,
+ second-order scheme scheme is
 \begin_inset Formula 
 \begin{eqnarray*}
 A=1 & - & \left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)-\chi\left(1-\alpha\right)\frac{c\left(1-c\right)}{2}\left(1-2e^{-ik\Delta x}+e^{-2ik\Delta x}\right)\\
@@ -1796,6 +1797,413 @@ name "fig:WB_converge"
 
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Third-order Lax-Wendroff
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n}}{\partial t}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial t^{2}}+\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n}}{\partial t^{3}}+\left(\Delta t^{4}\right)\\
+ & = & \psi_{j}^{n}-u\Delta t\frac{\partial\psi_{j}^{n}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial x^{2}}-u^{3}\frac{\Delta t^{3}}{2!}\frac{\partial^{3}\psi_{j}^{n}}{\partial x^{3}}+O\left(\Delta t^{4}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Use third-order approximations:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{\prime} & = & \frac{\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}}{6\Delta x}\\
+\psi_{i}^{\prime\prime} & = & \frac{\psi_{i-1}-2\psi_{i}+\psi_{i+1}}{\Delta x^{2}}\\
+\psi_{i}^{\prime\prime\prime} & = & \frac{\psi_{i+1}-3\psi_{i}+3\psi_{i-1}-\psi_{i-2}}{\Delta x^{3}}.
+\end{eqnarray*}
+
+\end_inset
+
+to give LW3e:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-c\left(\psi_{j}^{(n)}-\psi_{j-1}^{(n)}\right)-\frac{c}{2}\left(1-c\right)\left(\psi_{j-1}^{(n)}-2\psi_{j}^{(n)}+\psi_{j+1}^{(n)}\right)\\
+ & + & \frac{c}{6}\left(1-c^{2}\right)\left(\psi_{j+1}^{(n)}-3\psi_{j}^{(n)}+3\psi_{j-1}^{(n)}-\psi_{j-2}^{(n)}\right)
+\end{eqnarray*}
+
+\end_inset
+
+LW3i:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-c\left(\psi_{j}^{(n+1)}-\psi_{j-1}^{(n+1)}\right)-\frac{c}{2}\left(1+c\right)\left(\psi_{j-1}^{(n+1)}-2\psi_{j}^{(n+1)}+\psi_{j+1}^{(n+1)}\right)\\
+ & + & \frac{c}{6}\left(c^{2}-1\right)\left(\psi_{j+1}^{(n+1)}-3\psi_{j}^{(n+1)}+3\psi_{j-1}^{(n+1)}-\psi_{j-2}^{(n+1)}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Combining with off-centering 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}-\left(1-\alpha\right)c\left(\psi_{j}^{(n)}-\psi_{j-1}^{(n)}\right)-\alpha c\left(\psi_{j}^{(n+1)}-\psi_{j-1}^{(n+1)}\right)\\
+ & - & \left(1-\alpha\right)\frac{c}{2}\left(1-c\right)\left(\psi_{j-1}^{(n)}-2\psi_{j}^{(n)}+\psi_{j+1}^{(n)}\right)\\
+ & - & \alpha\frac{c}{2}\left(1+c\right)\left(\psi_{j-1}^{(n+1)}-2\psi_{j}^{(n+1)}+\psi_{j+1}^{(n+1)}\right)\\
+ & + & \left(1-\alpha\right)\frac{c}{6}\left(1-c^{2}\right)\left(\psi_{j+1}^{(n)}-3\psi_{j}^{(n)}+3\psi_{j-1}^{(n)}-\psi_{j-2}^{(n)}\right)\\
+ & + & \alpha\frac{c}{6}\left(c^{2}-1\right)\left(\psi_{j+1}^{(n+1)}-3\psi_{j}^{(n+1)}+3\psi_{j-1}^{(n+1)}-\psi_{j-2}^{(n+1)}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Stability Analysis
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+A & = & 1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)-\alpha cA\left(1-e^{-ik\Delta x}\right)\\
+ & - & \left(1-\alpha\right)\frac{c}{2}\left(1-c\right)\left(e^{-ik\Delta x}-2+e^{ik\Delta x}\right)\\
+ & - & \alpha\frac{c}{2}\left(1+c\right)A\left(e^{-ik\Delta x}-2+e^{ik\Delta x}\right)\\
+ & + & \left(1-\alpha\right)\frac{c}{6}\left(1-c^{2}\right)\left(e^{ik\Delta x}-3+3e^{-ik\Delta x}-e^{-2ik\Delta x}\right)\\
+ & + & \alpha\frac{c}{6}\left(c^{2}-1\right)A\left(e^{ik\Delta x}-3+3e^{-ik\Delta x}-e^{-2ik\Delta x}\right)\\
+\implies A & = & \frac{1-\left(1-\alpha\right)c\left(1-e^{-ik\Delta x}\right)-\left(1-\alpha\right)\frac{c}{2}\left(1-c\right)\left(e^{-ik\Delta x}-2+e^{ik\Delta x}\right)+\left(1-\alpha\right)\frac{c}{6}\left(1-c^{2}\right)\left(e^{ik\Delta x}-3+3e^{-ik\Delta x}-e^{-2ik\Delta x}\right)}{1+\alpha c\left(1-e^{-ik\Delta x}\right)+\alpha\frac{c}{2}\left(1+c\right)\left(e^{-ik\Delta x}-2+e^{ik\Delta x}\right)-\alpha\frac{c}{6}\left(c^{2}-1\right)\left(e^{ik\Delta x}-3+3e^{-ik\Delta x}-e^{-2ik\Delta x}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+For 
+\begin_inset Formula $k\Delta x=\pi,\ e^{ik\Delta x}=-1,\ e^{-ik\Delta x}=-1,\ e^{-2ik\Delta x}=1\implies$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+A & = & \frac{1-2\left(1-\alpha\right)c+2\left(1-\alpha\right)c\left(1-c\right)-\frac{4}{3}\left(1-\alpha\right)c\left(1-c^{2}\right)}{1+2\alpha c-2\alpha c\left(1+c\right)+\frac{4}{3}\alpha c\left(c^{2}-1\right)}\\
+ & = & \frac{1+\frac{2}{3}\left(1-\alpha\right)c\left(2c^{2}-3c-2\right)}{1+\frac{2}{3}\alpha c\left(2c^{2}-3c-2\right)}\\
+ & = & \frac{3+2\left(1-\alpha\right)c\left(2c+1\right)\left(c-2\right)}{3+2\alpha c\left(2c+1\right)\left(c-2\right)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "foreground"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from pylab import *
+\end_layout
+
+\begin_layout Plain Layout
+
+c = linspace(0,
+ 3,31).reshape(1,31)
+\end_layout
+
+\begin_layout Plain Layout
+
+a = linspace(0,1,21).reshape(21,1)
+\end_layout
+
+\begin_layout Plain Layout
+
+A = (3+2*(1-a)*c*(2*c+1)*(c-2))/(3+2*a*c*(2*c+1)*(c-2))
+\end_layout
+
+\begin_layout Plain Layout
+
+contourf(c.squeeze(),
+ a.squeeze(),
+ A,
+ arange(-2,
+ 2.1,
+ 0.2))
+\end_layout
+
+\begin_layout Plain Layout
+
+colorbar()
+\end_layout
+
+\begin_layout Plain Layout
+
+contour(c.squeeze(),
+ a.squeeze(),
+ A,
+ [-1,1],
+ colors=['k','k'])
+\end_layout
+
+\begin_layout Plain Layout
+
+xlabel(r'$c$')
+\end_layout
+
+\begin_layout Plain Layout
+
+ylabel(r'$
+\backslash
+alpha$')
+\end_layout
+
+\begin_layout Plain Layout
+
+savefig(
+\begin_inset Quotes bld
+\end_inset
+
+analysis/plots/LW3_Api.pdf
+\begin_inset Quotes brd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+clf()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "foreground"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename analysis/plots/LW3_Api.pdf
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The amplification factor of LW3 ImEx for various Courant number and off-centering,
+ 
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Third-order Warming and Beam
+\end_layout
+
+\begin_layout Standard
+As with LW3 we start with
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n}}{\partial t}+\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial t^{2}}+\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n}}{\partial t^{3}}+\left(\Delta t^{4}\right)\\
+ & = & \psi_{j}^{n}-u\Delta t\frac{\partial\psi_{j}^{n}}{\partial x}+u^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial x^{2}}-u^{3}\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n}}{\partial x^{3}}+O\left(\Delta t^{4}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Consider the cubic polynomial for 
+\begin_inset Formula $\psi$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\psi=ax^{3}+bx^{2}+cx+d\label{eq:cubicPoly}
+\end{equation}
+
+\end_inset
+
+so that
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi^{\prime} & = & 3ax^{2}+2bx+c\\
+\psi^{\prime\prime} & = & 6ax+2b\\
+\psi^{\prime\prime\prime} & = & 6a.
+\end{eqnarray*}
+
+\end_inset
+
+Then if we assume that position 
+\begin_inset Formula $i$
+\end_inset
+
+ is at 
+\begin_inset Formula $x=0,$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i} & = & d\\
+\psi_{i}^{\prime} & = & c\\
+\psi_{i}^{\prime\prime} & = & 2b\\
+\psi_{i}^{\prime\prime\prime} & = & 6a.
+\end{eqnarray*}
+
+\end_inset
+
+Substituting positions 
+\begin_inset Formula $x_{i-3}=-3\Delta x$
+\end_inset
+
+,
+ 
+\begin_inset Formula $x_{i-2}=-2\Delta x,$
+\end_inset
+
+
+\begin_inset Formula $x_{i-1}=-\Delta x$
+\end_inset
+
+ into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:cubicPoly"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) gives
+\begin_inset Formula 
+\begin{eqnarray}
+\psi_{i-3} & = & -27a\Delta x^{3}+9b\Delta x^{2}-3c\Delta x+d\\
+\psi_{i-2} & = & -8a\Delta x^{3}+4b\Delta x^{2}-2c\Delta x+d\\
+\psi_{i-1} & = & -a\Delta x^{3}+b\Delta x^{2}-c\Delta x+d\\
+\psi_{i} & = & d
+\end{eqnarray}
+
+\end_inset
+
+which can be solving using Gaussian elimination to find 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $c$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i-3}-3\psi_{i-1} & = & -24a\Delta x^{3}+6b\Delta x^{2}-2\psi_{i}\\
+\psi_{i-2}-2\psi_{i-1} & = & -6a\Delta x^{3}+2b\Delta x^{2}-\psi_{i}\\
+\implies\psi_{i-3}-3\psi_{i-1}-3\psi_{i-2}+6\psi_{i-1} & = & -6a\Delta x^{3}+\psi_{i}\\
+\implies a & = & \frac{1}{6\Delta x^{3}}\left(-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}\right)\\
+2b\Delta x^{2} & = & \psi_{i-2}-2\psi_{i-1}-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}+\psi_{i}\\
+\implies b & = & \frac{1}{2\Delta x^{2}}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)\\
+c & = & \frac{1}{\Delta x}\left(-\frac{1}{6}\left(-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}\right)+\frac{1}{2}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)+\psi_{i}-\psi_{i-1}\right)\\
+ & = & \frac{1}{6\Delta x}\left(\psi_{i-3}-3\psi_{i-3}+12\psi_{i-2}-3\psi_{i-2}+3\psi_{i-1}-15\psi_{i-1}-\psi_{i-1}+6\psi_{i}+\psi_{i}-\psi_{i}\right)\\
+ & = & \frac{1}{6\Delta x}\left(-2\psi_{i-3}+9\psi_{i-2}-13\psi_{i-1}+6\psi_{i}\right)
+\end{eqnarray*}
+
+\end_inset
+
+This gives WB3e:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}-\frac{c}{6}\left(-2\psi_{i-3}+9\psi_{i-2}-13\psi_{i-1}+6\psi_{i}\right)+\frac{c^{2}}{2}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)\\
+ & - & \frac{c^{3}}{6}\left(-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}\right)\\
+ & = & \psi_{j}^{n}+\frac{c}{6}\left(2-3c+c^{2}\right)\psi_{i-3}-\frac{c}{6}\left(9-12c+3c^{2}\right)\psi_{i-2}+\frac{c}{6}\left(13-15c+3c^{2}\right)\psi_{i-1}-\frac{c}{6}\left(6-6c-3c^{2}\right)\psi_{i}\\
+ & = & \psi_{j}^{n}+\frac{c}{6}\left(2-c\right)\left(1-c\right)\psi_{i-3}-\frac{c}{2}\left(3-c\right)\left(1-c\right)\psi_{i-2}+\frac{c}{6}\left(13-15c+3c^{2}\right)\psi_{i-1}-\frac{c}{2}\left(2-2c-c^{2}\right)\psi_{i}
+\end{eqnarray*}
+
+\end_inset
+
+and WB3i
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i}^{(n)} & = & \psi_{i}^{(n+1)}+\Delta tu\frac{\partial\psi}{\partial x}_{i}^{(n+1)}+\frac{\Delta t^{2}}{2!}u^{2}\frac{\partial^{2}\psi}{\partial x^{2}}_{i}^{(n+1)}+\frac{\Delta t^{3}}{3!}u^{3}\frac{\partial^{3}\psi}{\partial x^{3}}_{i}^{(n+1)}+O\left(\Delta t^{4}\right).\\
+\implies\psi_{i}^{(n+1)} & = & \psi_{i}^{(n)}-\frac{c}{6}\left(-2\psi_{i-3}^{n+1}+9\psi_{i-2}^{n+1}-13\psi_{i-1}^{n+1}+6\psi_{i}^{n+1}\right)-\frac{c^{2}}{2}\left(-\psi_{i-3}^{n+1}+4\psi_{i-2}^{n+1}-5\psi_{i-1}^{n+1}+2\psi_{i}^{n+1}\right)\\
+ & - & \frac{c^{3}}{6}\left(-\psi_{i-3}^{n+1}+3\psi_{i-2}^{n+1}-3\psi_{i-1}^{n+1}+\psi_{i}^{n+1}\right)
+\end{eqnarray*}
 
 \end_inset
 
