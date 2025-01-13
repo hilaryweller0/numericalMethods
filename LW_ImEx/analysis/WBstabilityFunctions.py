@@ -8,6 +8,27 @@ def chiFromC(c, k):
     return chi
 
 
+# Maximum magnitude of the amplification factor for WB3i
+def magA_WB3i(c):
+    """ c is the Courant number"""
+    kdxs = np.linspace(0, 2*pi, 37)
+    maxMag = 0
+    for ik in range(len(kdxs)):
+        kdx = kdxs[ik]
+        A = A_WB3i(c, kdx)
+        maxMag = max(maxMag, abs(A))
+    return maxMag
+
+def A_WB3i(c, kdx):
+    return 1/(1 + c/6*(11 + 6*c + c**2) - 0.5*c*(6 + 5*c + c**2)*exp(-1j*kdx)
+           + 0.5*c*(3 + 4*c + c**2)*exp(-2*1j*kdx)
+           - c/6*(2 + 3*c + c**2)*exp(-3*1j*kdx))
+
+def A_WB3e(c, kdx):
+    return 1 - c/6*(11 - 6*c + c**2) + 0.5*c*(6 - 5*c + c**2)*exp(-1j*kdx) \
+          - 0.5*c*(3 - 4*c + c**2)*exp(-2*1j*kdx) \
+          + c/6*(2 - 3*c + c**2)*exp(-3*1j*kdx)
+
 # Maximum magnitude of the amplification factor for the full implicit scheme
 def magA_full(c, a, chi):
     """ c is the Courant number

@@ -2180,8 +2180,9 @@ which can be solving using Gaussian elimination to find
 2b\Delta x^{2} & = & \psi_{i-2}-2\psi_{i-1}-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}+\psi_{i}\\
 \implies b & = & \frac{1}{2\Delta x^{2}}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)\\
 c & = & \frac{1}{\Delta x}\left(-\frac{1}{6}\left(-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}\right)+\frac{1}{2}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)+\psi_{i}-\psi_{i-1}\right)\\
- & = & \frac{1}{6\Delta x}\left(\psi_{i-3}-3\psi_{i-3}+12\psi_{i-2}-3\psi_{i-2}+3\psi_{i-1}-15\psi_{i-1}-\psi_{i-1}+6\psi_{i}+\psi_{i}-\psi_{i}\right)\\
- & = & \frac{1}{6\Delta x}\left(-2\psi_{i-3}+9\psi_{i-2}-13\psi_{i-1}+6\psi_{i}\right)
+ & = & \frac{1}{6\Delta x}\left(\psi_{i-3}-3\psi_{i-2}+3\psi_{i-1}-\psi_{i}-3\psi_{i-3}+12\psi_{i-2}-15\psi_{i-1}+6\psi_{i}+6\psi_{i}-6\psi_{i-1}\right)\\
+ & = & \frac{1}{6\Delta x}\left(\psi_{i-3}-3\psi_{i-3}-3\psi_{i-2}+12\psi_{i-2}+3\psi_{i-1}-15\psi_{i-1}-6\psi_{i-1}-\psi_{i}+6\psi_{i}+6\psi_{i}\right)\\
+\implies c & = & \frac{1}{6\Delta x}\left(-2\psi_{i-3}+9\psi_{i-2}-18\psi_{i-1}+11\psi_{i}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -2189,10 +2190,11 @@ c & = & \frac{1}{\Delta x}\left(-\frac{1}{6}\left(-\psi_{i-3}+3\psi_{i-2}-3\psi_
 This gives WB3e:
 \begin_inset Formula 
 \begin{eqnarray*}
-\psi_{j}^{n+1} & = & \psi_{j}^{n}-\frac{c}{6}\left(-2\psi_{i-3}+9\psi_{i-2}-13\psi_{i-1}+6\psi_{i}\right)+\frac{c^{2}}{2}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)\\
+\psi_{j}^{n+1} & = & \psi_{j}^{n}-\frac{c}{6}\left(-2\psi_{i-3}+9\psi_{i-2}-18\psi_{i-1}+11\psi_{i}\right)+\frac{c^{2}}{2}\left(-\psi_{i-3}+4\psi_{i-2}-5\psi_{i-1}+2\psi_{i}\right)\\
  & - & \frac{c^{3}}{6}\left(-\psi_{i-3}+3\psi_{i-2}-3\psi_{i-1}+\psi_{i}\right)\\
- & = & \psi_{j}^{n}+\frac{c}{6}\left(2-3c+c^{2}\right)\psi_{i-3}-\frac{c}{6}\left(9-12c+3c^{2}\right)\psi_{i-2}+\frac{c}{6}\left(13-15c+3c^{2}\right)\psi_{i-1}-\frac{c}{6}\left(6-6c-3c^{2}\right)\psi_{i}\\
- & = & \psi_{j}^{n}+\frac{c}{6}\left(2-c\right)\left(1-c\right)\psi_{i-3}-\frac{c}{2}\left(3-c\right)\left(1-c\right)\psi_{i-2}+\frac{c}{6}\left(13-15c+3c^{2}\right)\psi_{i-1}-\frac{c}{2}\left(2-2c-c^{2}\right)\psi_{i}
+ & = & \psi_{j}^{n}+\frac{c}{6}\left(2-3c+c^{2}\right)\psi_{i-3}-\frac{c}{6}\left(9-12c+3c^{2}\right)\psi_{i-2}+\frac{c}{6}\left(18-15c+3c^{2}\right)\psi_{i-1}-\frac{c}{6}\left(11-6c+c^{2}\right)\psi_{i}\\
+ & = & \psi_{j}^{n}+\frac{c}{6}\left(2-c\right)\left(1-c\right)\psi_{i-3}-\frac{c}{2}\left(3-c\right)\left(1-c\right)\psi_{i-2}\\
+ & + & \frac{c}{2}\left(3-c\right)\left(2-c\right)\psi_{i-1}-\frac{c}{6}\left(11-6c+c^{2}\right)\psi_{i}
 \end{eqnarray*}
 
 \end_inset

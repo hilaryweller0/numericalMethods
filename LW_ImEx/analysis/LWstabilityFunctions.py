@@ -16,12 +16,15 @@ def magA_full(c, a, chi):
     maxMag = 0
     for ik in range(len(kdxs)):
         kdx = kdxs[ik]
-        A = (1 - (1-a)*c*(1 - exp(-1j*kdx)) - 
+        A = A_full(c, a, chi, kdx)
+        maxMag = max(maxMag, abs(A))
+    return maxMag
+
+def A_full(c, a, chi, kdx):
+    return (1 - (1-a)*c*(1 - exp(-1j*kdx)) - 
                   (1-a)*0.5*c*(1-chi*c)*(exp(1j*kdx) - 2 + exp(-1j*kdx))) \
             / (1 + a*c*(1 - exp(-1j*kdx)) 
                    + a*0.5*c*(1+chi*c)*(exp(1j*kdx) - 2 + exp(-1j*kdx)))
-        maxMag = max(maxMag, abs(A))
-    return maxMag
 
 # Maximum magnitude of the amplification factor for predictor-corrector scheme
 def magA_PC(c, a, chi, kmax):
