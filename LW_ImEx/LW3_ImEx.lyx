@@ -1,0 +1,522 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\float_alignment class
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip halfline
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Third-order Lax-Wendroff ImEx
+\end_layout
+
+\begin_layout Standard
+To solve
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\psi}{\partial t}=-u\frac{\partial\psi}{\partial x}
+\end{equation}
+
+\end_inset
+
+with 
+\begin_inset Formula $c=\Delta t\ u/\Delta x$
+\end_inset
+
+ on a uniform grid.
+\end_layout
+
+\begin_layout Section
+Derivation of Third-order Lax-Wendroff
+\end_layout
+
+\begin_layout Subsection
+Explicit
+\end_layout
+
+\begin_layout Standard
+Start from the Taylor series in time and convert temporal to spatial derivatives:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n}}{\partial t}+\chi_{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial t^{2}}+\chi_{3}\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n}}{\partial t^{3}}+\left(\Delta t^{4}\right)\\
+%
+ & = & \psi_{j}^{n}-u\Delta t\frac{\partial\psi_{j}^{n}}{\partial x}+\chi_{2}u^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n}}{\partial x^{2}}-\chi_{3}u^{3}\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n}}{\partial x^{3}}+O\left(\Delta t^{4}\right)
+\end{eqnarray*}
+
+\end_inset
+
+The limiters,
+ 
+\begin_inset Formula $\chi_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\chi_{3}$
+\end_inset
+
+ limit the second- and third-order corrections respectively.
+\end_layout
+
+\begin_layout Subsection
+Implicit
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n} & = & \psi_{j}^{n+1}-\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial t}+\chi_{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial t^{2}}-\chi_{3}\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n+1}}{\partial t^{3}}+\left(\Delta t^{4}\right)\\
+\implies\psi_{j}^{n+1} & = & \psi_{j}^{n}+\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial t}-\chi_{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial t^{2}}+\chi_{3}\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n+1}}{\partial t^{3}}\\
+ & = & \psi_{j}^{n}-u\Delta t\frac{\partial\psi_{j}^{n+1}}{\partial x}-\chi_{2}u^{2}\frac{\Delta t^{2}}{2!}\frac{\partial^{2}\psi_{j}^{n+1}}{\partial x^{2}}-\chi_{3}u^{3}\frac{\Delta t^{3}}{3!}\frac{\partial^{3}\psi_{j}^{n+1}}{\partial x^{3}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Spatial Discretisation
+\end_layout
+
+\begin_layout Standard
+In order to find the spatial derivatives,
+ consider the cubic polynomial
+\begin_inset Formula 
+\begin{equation}
+\psi=ax^{3}+bx^{2}+cx+d
+\end{equation}
+
+\end_inset
+
+so that
+\begin_inset Formula 
+\begin{equation}
+\psi^{\prime}=3ax^{2}+2bx+c,\hspace{1cm}\psi^{\prime\prime}=6ax+2b,\hspace{1cm}\psi^{\prime\prime\prime}=6a.
+\end{equation}
+
+\end_inset
+
+Then we assume that position 
+\begin_inset Formula $i$
+\end_inset
+
+ is at 
+\begin_inset Formula $x=0$
+\end_inset
+
+,
+ then we get:
+\begin_inset Formula 
+\begin{equation}
+\psi_{i}=d,\hspace{1cm}\psi_{i}^{\prime}=c,\hspace{1cm}\psi_{i}^{\prime\prime}=2b,\hspace{1cm}\psi_{i}^{\prime\prime\prime}=6a.
+\end{equation}
+
+\end_inset
+
+Substituting positions 
+\begin_inset Formula $x_{i-2}=-2\Delta x$
+\end_inset
+
+,
+ 
+\begin_inset Formula $x_{i-1}=-\Delta x$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{i+1}=\Delta x$
+\end_inset
+
+ into the cubic polynomial gives
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{i-2} & = & -8a\Delta x^{3}+4b\Delta x^{2}-2c\Delta x+d\\
+\psi_{i-1} & = & -a\Delta x^{3}+b\Delta x^{2}-c\Delta x+d\\
+\psi_{i} & = & d\\
+\psi_{i+1} & = & a\Delta x^{3}+b\Delta x^{2}+c\Delta x+d
+\end{eqnarray*}
+
+\end_inset
+
+which can be solving using Gaussian elimination to find 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $c$
+\end_inset
+
+.
+ This can assume 
+\begin_inset Formula $\Delta x=1$
+\end_inset
+
+ without loss of generality.
+ The symbolic Python manipulation in 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+LW3_ImEx.ipynb
+\end_layout
+
+\end_inset
+
+ gives:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\psi}{\partial x} & = & \frac{1}{6\Delta x}\left(\psi_{i-2}-6\psi_{i-1}+3\psi_{i}+2\psi_{i+1}\right)\\
+\frac{\partial^{2}\psi}{\partial x^{2}} & = & \frac{1}{\Delta x^{2}}\left(\psi_{i-1}-2\psi_{i}+\psi_{i+1}\right)\\
+\frac{\partial^{3}\psi}{\partial x^{3}} & = & \frac{1}{\Delta x^{3}}\left(-\psi_{i-2}+3\psi_{i-1}-3\psi_{i}+\psi_{i+1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Final Schemes
+\end_layout
+
+\begin_layout Standard
+This gives the explicit,
+ LW3e scheme:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}-\frac{c}{6}\left(\psi_{i-2}^{n}-6\psi_{i-1}^{n}+3\psi_{i}^{n}+2\psi_{i+1}^{n}\right)+\chi_{2}\frac{c^{2}}{2\Delta x^{2}}\left(\psi_{i-1}^{n}-2\psi_{i}^{n}+\psi_{i+1}^{n}\right)\\
+ & - & \chi_{3}\frac{c^{3}}{6\Delta x^{3}}\left(-\psi_{i-2}^{n}+3\psi_{i-1}^{n}-3\psi_{i}^{n}+\psi_{i+1}^{n}\right)
+\end{eqnarray*}
+
+\end_inset
+
+and the implicit,
+ LW3i scheme:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1} & = & \psi_{j}^{n}-\frac{c}{6}\left(\psi_{i-2}^{n+1}-6\psi_{i-1}^{n+1}+3\psi_{i}^{n+1}+2\psi_{i+1}^{n+1}\right)-\chi_{2}\frac{c^{2}}{2\Delta x^{2}}\left(\psi_{i-1}^{n+1}-2\psi_{i}^{n+1}+\psi_{i+1}^{n+1}\right)\\
+ & - & \chi_{3}\frac{c^{3}}{6\Delta x^{3}}\left(-\psi_{i-2}^{n+1}+3\psi_{i-1}^{n+1}-3\psi_{i}^{n+1}+\psi_{i+1}^{n+1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+These can be combined into an AdImEx (adaptively implicit) scheme with off-centering 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{n+1}=\psi_{j}^{n} & - & \left(1-\alpha\right)\frac{c}{6}\left(\psi_{i-2}^{n}-6\psi_{i-1}^{n}+3\psi_{i}^{n}+2\psi_{i+1}^{n}\right)\\
+ & + & \chi_{2}\left(1-\alpha\right)\frac{c^{2}}{2}\left(\psi_{i-1}^{n}-2\psi_{i}^{n}+\psi_{i+1}^{n}\right)\\
+ & - & \chi_{3}\left(1-\alpha\right)\frac{c^{3}}{6}\left(-\psi_{i-2}^{n}+3\psi_{i-1}^{n}-3\psi_{i}^{n}+\psi_{i+1}^{n}\right)\\
+ & - & \alpha\frac{c}{6}\left(\psi_{i-2}^{n+1}-6\psi_{i-1}^{n+1}+3\psi_{i}^{n+1}+2\psi_{i+1}^{n+1}\right)\\
+ & - & \chi_{2}\alpha\frac{c^{2}}{2}\left(\psi_{i-1}^{n+1}-2\psi_{i}^{n+1}+\psi_{i+1}^{n+1}\right)\\
+ & - & \chi_{3}\alpha\frac{c^{3}}{6}\left(-\psi_{i-2}^{n+1}+3\psi_{i-1}^{n+1}-3\psi_{i}^{n+1}+\psi_{i+1}^{n+1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Implementation as a Matrix Equation
+\end_layout
+
+\begin_layout Standard
+The LW3 AdImEx scheme can be rearranged as:
+\begin_inset Formula 
+\begin{eqnarray*}
+ &  & \frac{\alpha c}{6}\left(1-\chi_{3}c^{2}\right)\psi_{i-2}^{n+1}+\frac{\alpha c}{2}\left(-2+\chi_{2}c+\chi_{3}c^{2}\right)\psi_{i-1}^{n+1}\\
+ & + & \left\{ 1+\frac{\alpha c}{2}\left(1-2\chi_{2}c-\chi_{3}c^{2}\right)\right\} \psi_{i}^{n+1}+\frac{\alpha c}{6}\left(2+3\chi_{2}c+\chi_{3}c^{2}\right)\psi_{i+1}^{n+1}\\
+=\psi_{j}^{n} & - & \left(1-\alpha\right)c\biggl\{\frac{1}{6}\left(1-\chi_{3}c^{2}\right)\psi_{i-2}^{n}+\frac{1}{2}\left(2+\chi_{2}c-\chi_{3}c^{2}\right)\psi_{i-1}^{n}\\
+ & - & \frac{1}{3}\left(1+2\chi_{2}c-\chi_{3}c^{2}\right)\psi_{i}^{n}-\frac{1}{6}\left(2-3\chi_{2}c+\chi_{3}c^{2}\right)\psi_{i+1}^{n}\biggr\}
+\end{eqnarray*}
+
+\end_inset
+
+which can be rearranged into a periodic matrix equation:
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccccccc}
+m_{i} & m_{i+1} & 0 & \cdots &  &  & 0 & m_{i-2} & m_{i-1}\\
+m_{i-1} & m_{i} & m_{i+1} & 0 & \cdots &  &  & 0 & m_{i-2}\\
+m_{i-2} & m_{i-1} & m_{i} & m_{i+1} & 0 & \cdots &  &  & 0\\
+0 & m_{i-2} & m_{i-1} & m_{i} & m_{i+1} & 0 & \cdots &  & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 &  &  &  & 0 & m_{i-2} & m_{i-1} & m_{i} & m_{i+1}\\
+m_{i+1} & 0 &  &  &  & 0 & m_{i-2} & m_{i-1} & m_{i}
+\end{array}\right)\left(\begin{array}{c}
+\phi_{0}^{n+1}\\
+\phi_{1}^{n+1}\\
+\phi_{2}^{n+1}\\
+\phi_{3}^{n+1}\\
+\vdots\\
+\phi_{n_{x}-2}^{n+1}\\
+\phi_{n_{x}-1}^{n+1}
+\end{array}\right)=\left(\begin{array}{c}
+\phi_{0}^{n}-...\\
+\phi_{1}^{n}-...\\
+\phi_{2}^{n}-...\\
+\phi_{3}^{n}-...\\
+\vdots\\
+\phi_{n_{x}-2}^{n}-...\\
+\phi_{n_{x}-1}^{n}-...
+\end{array}\right)
+\]
+
+\end_inset
+
+with
+\begin_inset Formula 
+\begin{eqnarray*}
+m_{i-2} & = & \frac{\alpha c}{6}\left(1-\chi_{3}c^{2}\right)\\
+m_{i-1} & = & \frac{\alpha c}{2}\left(-2+\chi_{2}c+\chi_{3}c^{2}\right)\\
+m_{i} & = & 1+\frac{\alpha c}{2}\left(1-2\chi_{2}c-\chi_{3}c^{2}\right)\\
+m_{i+1} & = & \frac{\alpha c}{6}\left(2+3\chi_{2}c+\chi_{3}c^{2}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Stability Analysis
+\end_layout
+
+\begin_layout Standard
+For a scheme:
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)} & = & \psi_{j}^{(n)}+\left(1-\alpha\right)\frac{\partial\psi}{\partial t}^{(n)}+\alpha\frac{\partial\psi}{\partial t}^{(n+1)}
+\end{eqnarray*}
+
+\end_inset
+
+the amplification factor,
+ 
+\begin_inset Formula $A$
+\end_inset
+
+,
+ is calculated from
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi_{j}^{(n+1)}=Ae^{ikj\Delta x}, &  & \psi_{j}^{(n)}=e^{ikj\Delta x}\\
+\implies A & = & \frac{1+\left(1-\alpha\right)\sum_{\ell}a_{\ell}e^{i\ell k\Delta x}}{1-\alpha\sum_{\ell}\tilde{a}_{\ell}e^{i\ell k\Delta x}}\\
+\text{where }\frac{\partial\psi}{\partial t}_{j}^{(n)} & = & \sum_{\ell=}a_{\ell}\psi_{j+\ell}^{(n)}\\
+\frac{\partial\psi}{\partial t}_{j}^{(n+1)} & = & \sum_{\ell}^{}\tilde{a}_{\ell}\psi_{j+\ell}^{(n+1)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The amplification factor for LW3 AdImEx is
+\begin_inset Formula 
+\begin{eqnarray*}
+A & = & \frac{1-\left(1-\alpha\right)\frac{c}{6}\left(e^{-2ik\Delta x}-6e^{-ik\Delta x}+3+2e^{ik\Delta x}\right)+\chi_{2}\left(1-\alpha\right)\frac{c^{2}}{2}\left(e^{-ik\Delta x}-2+e^{ik\Delta x}\right)-\chi_{3}\left(1-\alpha\right)\frac{c^{3}}{6}\left(-e^{-2ik\Delta x}+3e^{-ik\Delta x}-3+e^{ik\Delta x}\right)}{1+\frac{\alpha c}{6}\left(1-\chi_{3}c^{2}\right)e^{-2ik\Delta x}+\frac{\alpha c}{2}\left(-2+\chi_{2}c+\chi_{3}c^{2}\right)e^{-ik\Delta x}+\frac{\alpha c}{2}\left(1-2\chi_{2}c-\chi_{3}c^{2}\right)+\frac{\alpha c}{6}\left(2+3\chi_{2}c+\chi_{3}c^{2}\right)e^{ik\Delta x}}\\
+ & = & \frac{1-\left(1-\alpha\right)c\left\{ \frac{1}{6}\left(1-\chi_{3}c^{2}\right)e^{-2ik\Delta x}+\frac{1}{2}\left(2+\chi_{2}c-\chi_{3}\right)e^{-ik\Delta x}-\frac{1}{3}\left(1+2\chi_{2}c-\chi_{3}c^{2}\right)-\frac{1}{6}\left(2-3\chi_{2}c+\chi_{3}c^{2}\right)e^{ik\Delta x}\right\} }{1+\frac{\alpha c}{6}\left(1-\chi_{3}c^{2}\right)e^{-2ik\Delta x}+\frac{\alpha c}{2}\left(-2+\chi_{2}c+\chi_{3}c^{2}\right)e^{-ik\Delta x}+\frac{\alpha c}{2}\left(1-2\chi_{2}c-\chi_{3}c^{2}\right)+\frac{\alpha c}{6}\left(2+3\chi_{2}c+\chi_{3}c^{2}\right)e^{ik\Delta x}}
+\end{eqnarray*}
+
+\end_inset
+
+For 
+\begin_inset Formula $k\Delta x=\pi$
+\end_inset
+
+,
+ 
+\begin_inset Formula $e^{-2ik\Delta x}=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $e^{-ik\Delta x}=-1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $e^{ik\Delta x}=-1$
+\end_inset
+
+,
+ so 
+\begin_inset Formula $A$
+\end_inset
+
+ becomes
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{\pi} & = & \frac{1-\frac{2}{3}\left(1-\alpha\right)c\left(2+3\chi_{2}c-2\chi_{3}c^{2}\right)}{1+\frac{2}{3}\alpha c\left(2-3\chi_{2}c-2\chi_{3}c^{2}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+Stability requires 
+\begin_inset Formula $A_{\pi}\ge-1$
+\end_inset
+
+ which requires
+\begin_inset Formula 
+\begin{eqnarray*}
+1.\ 1+\frac{2}{3}\alpha c\left(2-3\chi_{2}c-2\chi_{3}c^{2}\right) & > & 0\\
+2.\ 1-\frac{2}{3}\left(1-\alpha\right)c\left(2+3\chi_{2}c-2\chi_{3}c^{2}\right) & \ge & -\left\{ 1+\frac{2}{3}\alpha c\left(2-3\chi_{2}c-2\chi_{3}c^{2}\right)\right\} .
+\end{eqnarray*}
+
+\end_inset
+
+Define 
+\begin_inset Formula $d=\chi_{2}c$
+\end_inset
+
+ and assume 
+\begin_inset Formula $d^{2}=\chi_{3}c^{2}\implies\chi_{3}=\chi_{2}^{2}$
+\end_inset
+
+.
+ Then:
+\begin_inset Formula 
+\[
+A_{\pi}=\frac{1-\frac{2}{3}\left(1-\alpha\right)c\left(2+3d-2d^{2}\right)}{1+\frac{2}{3}\alpha c\left(2-3d-2d^{2}\right)}.
+\]
+
+\end_inset
+
+Consider the first constraint in terms of 
+\begin_inset Formula $d$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+1+\frac{2}{3}\alpha c\left(2-3d-2d^{2}\right) & > & 0\\
+\iff2d^{2}+3d-\left(2+\frac{3}{2\alpha c}\right) & < & 0\\
+\implies d\in\left[\frac{-3\pm\sqrt{25+\frac{12}{\alpha c}}}{4}\right]\\
+\impliedby d & \in & \left[0,\frac{1}{2}\right]\\
+d=\frac{1}{2}\implies\chi_{2}=\frac{1}{2c}, &  & \chi_{3}=\frac{1}{4c^{2}}
+\end{eqnarray*}
+
+\end_inset
+
+Substitute 
+\begin_inset Formula $d=\frac{1}{2}$
+\end_inset
+
+ into the second constraint on 
+\begin_inset Formula $A_{\pi}$
+\end_inset
+
+ to find constraints for 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+1-2\left(1-\alpha\right)c & \ge & -1\\
+\iff1 & \ge & \left(1-\alpha\right)c\iff\alpha\ge1-\frac{1}{c}.
+\end{eqnarray*}
+
+\end_inset
+
+Which is familiar.
+\end_layout
+
+\end_body
+\end_document
