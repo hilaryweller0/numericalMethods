@@ -1,0 +1,15 @@
+In MY.py
+I think that at the moment, the initial conditions are stored but the final time is not stored in the arrays that have space for nt+1 times.
+
+In Zalesak(c,Phi)
+
+You do not need the line
+    Phinew = np.zeros(nx)
+
+The functions np.maximum and np.minimum do not work as you expect. See edited code.
+
+I am not completely sure about how your indices work for the +-half points but it seems that your expression for PM was wrong. I have corrected it.
+
+Your test for the sign of the fluxes when setting C seemed like the wrong sign.
+
+However this implementation is not correct. You need to check the indices and signs for the calculations of PP, Pm and C and how C depends on the sign of AF.

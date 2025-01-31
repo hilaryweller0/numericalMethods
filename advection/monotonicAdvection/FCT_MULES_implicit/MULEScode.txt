@@ -1,0 +1,66 @@
+(from src/finiteVolume/fvMatrices/solvers/MULES/MULESTemplates.C
+
+void Foam::MULES::limiter
+.
+.
+.
+    forAll(phiCorrIf, facei)
+    {
+        const label own = owner[facei];
+        const label nei = neighb[facei];
+
+        psiMaxn[own] = max(psiMaxn[own], psiIf[nei]);
+        psiMinn[own] = min(psiMinn[own], psiIf[nei]);
+
+        psiMaxn[nei] = max(psiMaxn[nei], psiIf[own]);
+        psiMinn[nei] = min(psiMinn[nei], psiIf[own]);
+
+        sumPhiBD[own] += phiBDIf[facei];
+        sumPhiBD[nei] -= phiBDIf[facei];
+
+        const scalar phiCorrf = phiCorrIf[facei];
+
+        if (phiCorrf > 0)
+        {
+            sumPhip[own] += phiCorrf;
+            mSumPhim[nei] += phiCorrf;
+        }
+        else
+        {
+            mSumPhim[own] -= phiCorrf;
+            sumPhip[nei] -= phiCorrf;
+        }
+    }
+
+The corresponding form for MULES correction of a bounded implicit solution is in
+from src/finiteVolume/fvMatrices/solvers/MULES/CMULESTemplates.C
+
+void Foam::MULES::limiterCorr
+.
+.
+.
+
+    forAll(phiCorrIf, facei)
+    {
+        const label own = owner[facei];
+        const label nei = neighb[facei];
+
+        psiMaxn[own] = max(psiMaxn[own], psiIf[nei]);
+        psiMinn[own] = min(psiMinn[own], psiIf[nei]);
+
+        psiMaxn[nei] = max(psiMaxn[nei], psiIf[own]);
+        psiMinn[nei] = min(psiMinn[nei], psiIf[own]);
+
+        const scalar phiCorrf = phiCorrIf[facei];
+
+        if (phiCorrf > 0)
+        {
+            sumPhip[own] += phiCorrf;
+            mSumPhim[nei] += phiCorrf;
+        }
+        else
+        {
+            mSumPhim[own] -= phiCorrf;
+            sumPhip[nei] -= phiCorrf;
+        }
+    }
