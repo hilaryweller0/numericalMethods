@@ -322,6 +322,12 @@ b & \text{if global maximum }b\text{ is required}\\
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "enu:fluxCorr"
+
+\end_inset
+
 Calculate the explicit,
  unlimited high-order fluxes and the flux corrections (the high-order fluxes do not need to be recalculated every iteration):
 \begin_inset Formula 
@@ -612,7 +618,7 @@ nolink "false"
 FCT Go back to step 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "enu:findMinMax"
+reference "enu:fluxCorr"
 plural "false"
 caps "false"
 noprefix "false"
