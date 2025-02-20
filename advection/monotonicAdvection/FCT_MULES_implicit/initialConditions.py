@@ -18,3 +18,7 @@ def halfWave(x):
     "Initial conditions consisting of a square wave, rounded off at the back"
     return np.where((x > 0) & (x <= 0.2), 0.5*(1-np.cos(np.pi*x/.2)),
                     np.where((x > 0.2) & (x <= 0.4), 1, 0))
+
+def fullWave(x):
+    "A positive sine wave"
+    return 0.5*(1 - np.sin(2*np.pi*x))
