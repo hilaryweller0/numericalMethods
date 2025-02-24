@@ -18,7 +18,7 @@ x = np.arange(0.5*dx, 1, dx)
 xi = np.arange(0, 1, dx)
 
 # The Courant number is defined at interfaces (j+1/2) and varies in space
-c = 16*np.cos(2*np.pi*x*nx/15 + 0.5*dx)
+c = 3+np.cos(2*np.pi*x*nx/15 + 0.5*dx)
 
 # Matrix for the exact solution
 M = np.zeros([nx,nx])
@@ -28,9 +28,16 @@ for j in range(nx):
     M[j,(j+1)%nx] = -max(-c[(j+1)%nx],0)
 
 # The dependent variable, phi, is defined at cell centres
-phi = fullWave(x*4) + 2
+phi = halfWave(x) #fullWave(x*4) + 2
 phiNew = phi.copy()
 phiNewExact = solve(M,phi)
+
+# Explicit solution
+maxC = int(np.ceil(np.max(c)))
+cE = c/maxC
+phiE = phi.copy()
+for it in range(maxC):
+    phiE = phiE - np.roll(cE,-1)*phiE + cE*np.roll(phiE,1)
 
 # Forward iteration of upwind advection, backward in time
 for j in range(len(phi)):
@@ -111,4 +118,61 @@ for j in range(len(phi)):
                + max(-c[(j+1)%nx],0)*phiNew[(j+1)%nx]
                )/(1 + max(c[(j+1)%nx],0) + max(-c[j],0))
 print('Third residual is ', R)
+
+
+# Mix up the order
+# The dependent variable, phi, is defined at cell centres
+import random
+order = list(range(nx))
+random.Random(3).shuffle(order)
+phiNew = phi.copy()
+
+for it in range(3):
+    # Forward iteration of upwind advection, backward in time
+    for j in order:
+        phiNew[j%nx] = (
+            phi[j%nx] + max(c[j%nx],0)*phiNew[(j-1)%nx]
+                   + max(-c[(j+1)%nx],0)*phiNew[(j+1)%nx]
+                   )/(1 + max(c[(j+1)%nx],0) + max(-c[j%nx],0))
+    
+    # Backward iteration of upwind advection, backward in time
+    for j in reversed(order):
+        phiNew[j%nx] = (
+            phi[j%nx] + max(c[j%nx],0)*phiNew[(j-1)%nx]
+                   + max(-c[(j+1)%nx],0)*phiNew[(j+1)%nx]
+                   )/(1 + max(c[(j+1)%nx],0) + max(-c[j%nx],0))
+    
+    # Make it conservative
+    phiTmp = phiNew.copy()
+    for j in range(nx):
+        phiNew[j] = phi[j] - c[(j+1)%nx]*phiTmp[j] + c[j]*phiTmp[(j-1)%nx]
+
+# Conservation
+print('Sum = ', sum(phi), ' numerical = ', sum(phiNew))
+
+# Plot the solution 
+plt.plot(x, phi, label='t=0')
+plt.plot(x, phiNew, label='Forward-backward-forward iterations')
+plt.plot(x, phiNewExact, label='Full matrix solve')
+#plt.plot(xi, c, label='Courant number')
+plt.legend()
+plt.show()
+
+# Jacobi iterations (only for c>0)
+phiNew = phi.copy()
+
+# Plot the solution 
+plt.plot(x, phi, label='t=0')
+plt.plot(x, phiNewExact, label='Full matrix solve')
+plt.plot(x, phiE, label='Explicit solution')
+
+for it in range(4):
+    phiNew = (phi + c*np.roll(phiNew,1)) / (1 + np.roll(c,-1))
+    plt.plot(x, phiNew, label=str(it+1)+' Jacobi iterations')
+    # Conservation
+    print('Sum = ', sum(phi), ' iteration', it+1, ' numerical = ', sum(phiNew))
+
+#plt.plot(xi, c, label='Courant number')
+plt.legend()
+plt.show()
 
