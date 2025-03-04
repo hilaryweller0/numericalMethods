@@ -11,6 +11,7 @@
 from scipy.sparse import diags
 from scipy.sparse.linalg import spsolve
 import numpy as np
+from JacobiSolve import *
 
 def advect(phi, c, flux, options=None):
     """Advect cell values phi using Courant number c using flux for one time step.
@@ -77,7 +78,12 @@ def upwindFlux(phi, c, options=None):
         a = a(c)
     M = upwindMatrix(c, a, nx)
     # Solve the implicit problem
-    phiNew = spsolve(M, phi - (1-a)*c*(phi - np.roll(phi,1)))
+    phiNew = phi.copy()
+    Jacobi = options["Jacobi"] if "Jacobi" in options else False
+    if Jacobi:
+        JacobiSolve(M, phi - (1-a)*c*(phi - np.roll(phi,1)), phiNew, maxIt=10)
+    else:
+        phiNew = spsolve(M, phi - (1-a)*c*(phi - np.roll(phi,1)))
     # Back-substitute to get the implicit fluxes
     return (1-a)*phi + a*phiNew
 

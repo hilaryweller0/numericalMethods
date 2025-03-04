@@ -1,0 +1,220 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options false
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Jacobi Iterations of ImEx Upwind for Bounded Fluxes
+\end_layout
+
+\begin_layout Standard
+Consider a non-uniform,
+ 1D grid to solve the linear advection equation
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\phi}{\partial t}=-\frac{\partial u\phi}{\partial x}
+\end{equation}
+
+\end_inset
+
+ with upwind differencing and implicit time stepping with off-centering 
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+\phi_{j}^{(n+1)}=\phi_{j}^{(n)} & - & \delta_{j}\left[F_{j+1/2}^{(n)}-F_{j-1/2}^{(n)}+F_{j+1/2}^{(n+1)}-F_{j-1/2}^{(n+1)}\right]\\
+\text{where }\delta_{i} & = & \Delta t/\Delta x_{j}\\
+F_{j+1/2}^{(n)} & = & \left(1-\alpha_{j+1/2}\right)\left(\left\{ u_{j+1/2}\right\} \phi_{j}^{(n)}-\left\{ -u_{j+1/2}\right\} \phi_{j+1}^{(n)}\right)\\
+F_{j+1/2}^{(n+1)} & = & \left(\left\{ v_{j+1/2}\right\} \phi_{j}^{(n+1)}-\left\{ -v_{j+1/2}\right\} \phi_{j+1}^{(n+1)}\right)\\
+\text{where} &  & \left\{ X\right\} =\max\left(X,0\right),\ \ v_{j+1/2}=\alpha_{j+1/2}u_{j+1/2}\\
+\text{and } &  & c_{j}=\delta_{j}\left(\left\{ v_{j+1/2}\right\} +\left\{ -v_{j-1/2}\right\} \right)\\
+\text{so that }\phi_{j}^{(n+1)}=\phi_{j}^{(n)} & - & \delta_{j}\left(F_{j+1/2}^{(n)}-F_{j-1/2}^{(n)}\right)-c_{j}\phi_{j}^{(n+1)}\\
+ & + & \delta_{j}\left\{ -v_{j+1/2}\right\} \phi_{j+1}^{(n+1)}+\delta_{j}\left\{ v_{j-1/2}\right\} \phi_{j-1}^{(n+1)}
+\end{eqnarray}
+
+\end_inset
+
+Note that 
+\begin_inset Formula $F^{(n)}$
+\end_inset
+
+ and 
+\begin_inset Formula $F^{(n+1)}$
+\end_inset
+
+ are not defined in the same way,
+ due to the off-centering but 
+\begin_inset Formula $F_{j\pm1/2}$
+\end_inset
+
+ are defined in the same way.
+\end_layout
+
+\begin_layout Standard
+Jacobi iterations are indexed by 
+\begin_inset Formula $k$
+\end_inset
+
+ with 
+\begin_inset Formula $\phi_{j}^{k=0}=\phi_{j}^{(n)}$
+\end_inset
+
+ and for 
+\begin_inset Formula $k>0$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+\phi_{j}^{k} & = & \frac{\phi_{j}^{(n)}-\delta_{j}\left(F_{j+1/2}^{(n)}-F_{j-1/2}^{(n)}\right)+\delta_{j}\left\{ -v_{j+1/2}\right\} \phi_{j+1}^{k-1}+\delta_{j}\left\{ v_{j-1/2}\right\} \phi_{j-1}^{k-1}}{1+c_{j}}.\label{eq:Jit}
+\end{eqnarray}
+
+\end_inset
+
+To write using fluxes,
+ this needs to be written as
+\begin_inset Formula 
+\begin{eqnarray}
+\phi_{j}^{k} & = & \phi_{j}^{n}-\delta_{j}\left(F_{j+1/2}^{k}-F_{j-1/2}^{k}\right)
+\end{eqnarray}
+
+\end_inset
+
+In order to write (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Jit"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) using fluxes,
+ we use 
+\begin_inset Formula $\frac{1}{1+c}=1-\frac{c}{1+c}$
+\end_inset
+
+ and separate into fluxes:
+\begin_inset Formula 
+\begin{eqnarray*}
+\phi_{j}^{k}=\phi_{j}^{(n)} & - & \frac{\delta_{j}}{1+c_{j}}\left(F_{j+1/2}^{(n)}+\left\{ v_{j+1/2}\right\} \phi_{j}^{(n)}-\left\{ -v_{j+1/2}\right\} \phi_{j+1}^{k-1}\right)\\
+ & + & \frac{\delta_{j}}{1+c_{j}}\left(F_{j-1/2}^{(n)}-\left\{ -v_{j-1/2}\right\} \phi_{j}^{(n)}+\left\{ v_{j-1/2}\right\} \phi_{j-1}^{k-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+This gives uniquely defined fluxes for 
+\begin_inset Formula $k=1$
+\end_inset
+
+,
+ apart from the 
+\begin_inset Formula $1/(1+c_{j})$
+\end_inset
+
+ prefactor:
+\begin_inset Formula 
+\begin{equation}
+F_{j+1/2}^{1}=\frac{1}{1+c_{j}}\left(F_{j+1/2}^{(n)}+\left\{ v_{j+1/2}\right\} \phi_{j}^{(n)}-\left\{ -v_{j+1/2}\right\} \phi_{j+1}^{(n)}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
