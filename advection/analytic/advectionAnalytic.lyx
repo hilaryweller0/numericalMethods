@@ -1,0 +1,215 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options false
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2cm
+\rightmargin 2.5cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle empty
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Analytic Solution of the Continuity Equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\rho}{\partial t}+\frac{\partial u\rho}{\partial x}=0\label{eq:cont}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $u(x)$
+\end_inset
+
+.
+ Assume solutions of the form
+\begin_inset Formula 
+\begin{equation}
+\rho=e^{f(x)}e^{kt}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $k$
+\end_inset
+
+ is constant and could be complex and 
+\begin_inset Formula $f\left(x\right)$
+\end_inset
+
+ could be complex.
+ Differentiating with respect to 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $t$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\rho}{\partial t} & = & ke^{f(x)}e^{kt}=k\rho\\
+\frac{\partial u\rho}{\partial x} & = & \rho\frac{\partial u}{\partial x}+u\frac{\partial\rho}{\partial x}\\
+ & = & \rho\frac{du}{dx}+u\rho\frac{df}{dx}
+\end{eqnarray*}
+
+\end_inset
+
+and substituting into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:cont"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) gives
+\begin_inset Formula 
+\begin{eqnarray*}
+k\rho+\rho\frac{\partial u}{\partial x}+u\rho\frac{df}{dx} & = & 0\\
+\implies\frac{df}{dx} & = & -\frac{1}{u}\left(k+\frac{du}{dx}\right)\\
+\implies f & = & -\int\frac{1}{u}\left(k+\frac{du}{dx}\right)dx\\
+ & = & -\int\frac{k}{u}dx-\int\frac{1}{u}du\\
+ & = & -\int\frac{k}{u}dx-\ln u\\
+\implies\rho & = & \frac{1}{u}e^{k\left(t-\int\frac{dx}{u}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+Check:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\rho}{\partial t} & = & k\rho\\
+\frac{\partial\rho}{\partial x} & = & \frac{u\frac{\partial}{\partial x}\left(e^{k\left(t-\int\frac{dx}{u}\right)}\right)-e^{k\left(t-\int\frac{dx}{u}\right)}\frac{du}{dx}}{u^{2}}\\
+ & = & \frac{1}{u}\left(\frac{\partial}{\partial x}\left(-k\int\frac{dx}{u}\right)\right)e^{k\left(t-\int\frac{dx}{u}\right)}-\frac{1}{u^{2}}e^{k\left(t-\int\frac{dx}{u}\right)}\frac{du}{dx}\\
+ & = & -\frac{\rho}{u}\left(k+\frac{du}{dx}\right)\\
+\frac{\partial\rho}{\partial t}+\rho\frac{\partial u}{\partial x}+u\frac{\partial\rho}{\partial x} & = & \rho\left\{ k+\frac{du}{dx}-\frac{u}{u}\left(k+\frac{du}{dx}\right)\right\} =0
+\end{eqnarray*}
+
+\end_inset
+
+So the checked solution can take the form
+\begin_inset Formula 
+\begin{equation}
+\rho=\frac{1}{u}e^{k\left(t-\int\frac{dx}{u}\right)}
+\end{equation}
+
+\end_inset
+
+If we choose
+\begin_inset Formula 
+\begin{eqnarray*}
+u & = & 1+\sin\ell x\\
+\implies\int\frac{dx}{u} & = & \int\frac{dx}{1+\sin\ell x}\\
+ & = & -\frac{1}{\ell}\tan\left(\frac{\pi}{4}-\frac{\ell x}{2}\right)\\
+\implies\rho\left(x,t\right) & = & e^{kt}\frac{e^{\frac{k}{\ell}\tan\left(\frac{\pi}{4}-\frac{\ell x}{2}\right)}}{1+\sin\ell x}
+\end{eqnarray*}
+
+\end_inset
+
+for any complex constants,
+ 
+\begin_inset Formula $k$
+\end_inset
+
+ and 
+\begin_inset Formula $\ell$
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document
