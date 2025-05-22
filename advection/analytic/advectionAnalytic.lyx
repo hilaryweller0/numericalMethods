@@ -194,7 +194,7 @@ If we choose
 u & = & 1+\sin\ell x\\
 \implies\int\frac{dx}{u} & = & \int\frac{dx}{1+\sin\ell x}\\
  & = & -\frac{1}{\ell}\tan\left(\frac{\pi}{4}-\frac{\ell x}{2}\right)\\
-\implies\rho\left(x,t\right) & = & e^{kt}\frac{e^{\frac{k}{\ell}\tan\left(\frac{\pi}{4}-\frac{\ell x}{2}\right)}}{1+\sin\ell x}
+\implies\rho\left(x,t\right) & = & e^{kt}\frac{e^{2k/\left(\ell\tan\left(\frac{\ell x}{2}\right)+\ell\right)}}{1+\sin\ell x}
 \end{eqnarray*}
 
 \end_inset
@@ -209,6 +209,67 @@ for any complex constants,
 \end_inset
 
 .
+ However 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is much more complicated for 
+\begin_inset Formula $u=2+\sin\ell x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section*
+Alternative
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\rho}{\partial t}+\frac{\partial u\rho}{\partial x}=0\label{eq:cont-1}
+\end{equation}
+
+\end_inset
+
+Assume 
+\begin_inset Formula $\rho$
+\end_inset
+
+ has solutions with growing oscillations
+\begin_inset Formula 
+\begin{eqnarray}
+\rho\left(x,t\right) & = & \rho_{0}+\lambda t\sin x\\
+\implies\frac{\partial\rho}{\partial t} & = & \lambda\sin x\\
+\text{and }\frac{\partial\rho}{\partial x} & = & \lambda t\cos x\\
+\frac{\partial u\rho}{\partial x} & = & u\frac{\partial\rho}{\partial x}+\rho\frac{\partial u}{\partial x}\\
+ & = & u\lambda t\cos x+\left(\rho_{0}+\lambda t\sin x\right)\frac{\partial u}{\partial x}\\
+\implies\lambda\sin x & + & u\lambda t\cos x+\left(\rho_{0}+\lambda t\sin x\right)\frac{\partial u}{\partial x}=0\\
+\frac{\partial u}{\partial x} & + & \frac{\lambda t\cos x}{\rho_{0}+\lambda t\sin x}u=-\frac{\lambda\sin x}{\rho_{0}+\lambda t\sin x}
+\end{eqnarray}
+
+\end_inset
+
+This can be solved for 
+\begin_inset Formula $u$
+\end_inset
+
+ with an integrating factor,
+ 
+\begin_inset Formula $I$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \exp\left(\int\frac{\lambda t\cos x}{\rho_{0}+\lambda t\sin x}dx\right)=\frac{\rho_{0}}{\lambda t}+\sin x\\
+\implies u & = & -\frac{1}{I}\int I\frac{\lambda\sin x}{\rho_{0}+\lambda t\sin x}dx\\
+ & = & \frac{\lambda\cos x}{a+\lambda t\sin x}
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \end_body

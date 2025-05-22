@@ -386,7 +386,7 @@ MULES also calculate
 
 ,
  using 
-\begin_inset Formula $\lambda_{f}=1$
+\begin_inset Formula $\lambda_{f}=0$
 \end_inset
 
  for the first iteration:
@@ -516,16 +516,6 @@ Calculate the limited high-order fluxes,
 \begin_layout Labeling
 \labelwidthstring 00.00.0000
 MULES 
-\begin_inset Phantom Phantom
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula 
 \begin{eqnarray*}
 \psi_{f}^{b} & = & \psi_{uf}^{b}+\lambda_{f}\psi_{f^{\prime}}
@@ -539,16 +529,6 @@ status open
 \begin_layout Labeling
 \labelwidthstring 00.00.0000
 FCT 
-\begin_inset Phantom Phantom
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula 
 \begin{eqnarray*}
 \psi_{f}^{b} & = & \psi_{f}^{b}+\lambda_{f}\psi_{f^{\prime}}
@@ -566,16 +546,6 @@ For
 \end_inset
 
 both 
-\begin_inset Phantom Phantom
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula 
 \begin{eqnarray*}
 V\frac{\psi^{b}-\psi^{n}}{\Delta t} & = & -\sum_{f}\phi\psi_{f}^{b}
@@ -598,7 +568,7 @@ Iterations:
 MULES Go back to step 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "enu:PpPm"
+reference "enu:fluxCorr"
 plural "false"
 caps "false"
 noprefix "false"
@@ -606,7 +576,7 @@ nolink "false"
 
 \end_inset
 
- but using updated 
+ to recalculate the HO fluxes using the MULES solution and using updated 
 \begin_inset Formula $\lambda_{f}$
 \end_inset
 
