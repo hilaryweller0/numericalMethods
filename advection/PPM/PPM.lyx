@@ -351,6 +351,83 @@ We want to write the PPM flux as a correction,
 
 \end_layout
 
+\begin_layout Subsection*
+PPM Define from Neigbouring Points and Gradients
+\end_layout
+
+\begin_layout Standard
+We assume that we have values 
+\begin_inset Formula $a_{u}$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{d}$
+\end_inset
+
+ in the cells upwind and downwind of face 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ We want to evaluate the flux,
+ 
+\begin_inset Formula $F$
+\end_inset
+
+ so that:
+\begin_inset Formula 
+\begin{eqnarray}
+a_{u}^{(n+1)} & = & a_{u}^{(n)}-\frac{\Delta t}{V}\sum_{f}F\\
+F & = & \overline{a}_{f}\mathbf{u}\cdot\mathbf{S}\\
+\overline{a}_{f} & = & a_{u}^{(n)}+C_{f}
+\end{eqnarray}
+
+\end_inset
+
+In cells 
+\begin_inset Formula $u$
+\end_inset
+
+ (
+\begin_inset Formula $j$
+\end_inset
+
+) and 
+\begin_inset Formula $d$
+\end_inset
+
+ (j+1),
+ we also know:
+\begin_inset Formula 
+\begin{eqnarray*}
+\nabla_{j+1/2}a & = & \frac{a_{j+1}-a_{j}}{\Delta x}\\
+\nabla_{j}a=\frac{a_{j+1}-a_{j-1}}{2\Delta x} &  & \nabla_{j+1}a=\frac{a_{j+2}-a_{j}}{2\Delta x}\\
+\nabla_{j}^{2}a=\frac{a_{j+1}-2a_{j}+a_{j-1}}{\Delta x^{2}} &  & \nabla_{j+1}^{2}a=\frac{a_{j+2}-2a_{j+1}+a_{j}}{\Delta x^{2}}
+\end{eqnarray*}
+
+\end_inset
+
+From these,
+ find:
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{j+1/2} & = & \frac{7}{12}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{1}{12}\left(a_{j+2}^{n}+a_{j-1}^{n}\right)\\
+ & = & \frac{7}{12}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{2\Delta x}{12}\left(\frac{a_{j+2}-a_{j}}{2\Delta x}+\frac{a_{j}}{2\Delta x}-\frac{a_{j+1}-a_{j-1}}{2\Delta x}+\frac{a_{j+1}^{n}}{2\Delta x}\right)\\
+ & = & \frac{1}{2}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{\Delta x}{6}\left(\nabla_{j+1}a-\nabla_{j}a\right)\\
+\Delta a_{j} & = & a_{j+1/2}-a_{j-1/2}\\
+a_{6,j} & = & 6\left(a_{j}^{(n)}-\frac{1}{2}\left(a_{j-1/2}+a_{j+1/2}\right)\right)\\
+\\\\\\a_{f12} & = & \frac{1}{12}\left(-a_{j-1}^{n}+a_{j}^{n}+a_{j+1}^{n}-a_{j+2}^{n}\right)\\
+ & = & \frac{2\Delta x}{12}\left(\frac{a_{j+1}-a_{j-1}}{2\Delta x}-\frac{a_{j+2}-a_{j}}{2\Delta x}\right)\\
+ & = & \frac{\Delta x}{6}\hat{\mathbf{S}}\cdot\left(\nabla_{u}a-\nabla_{d}a\right)=\frac{\Delta x^{2}}{6}\hat{\mathbf{S}}\cdot\frac{\nabla_{u}a-\nabla_{d}a}{\Delta x}\\
+\Delta a_{12j} & = & a_{12,j+1/2}-a_{12,j-1/2}\\
+ & = & \sum_{f}\frac{\Delta x^{2}}{6}\hat{\mathbf{S}}\cdot\frac{\nabla_{j}a-\nabla_{N}a}{\Delta x}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
