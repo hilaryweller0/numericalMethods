@@ -176,3 +176,9 @@ def linearUpwindFlux(phi, c, options=None):
     phiNew = spsolve(M, phi - (1-a)*c*(luFlux(phi) - np.roll(luFlux(phi),1)))
     # Back-substitute to get the implicit fluxes
     return (1-a)*luFlux(phi) + a*luFlux(phiNew)
+
+def quasiQuinticFlux(phi, c, options=None):
+    """Returns the quasi-quintic fluxes for cell values phi and Courant number c
+    Explicit"""
+    return 1/30*np.roll(phi,2) - 13/60*np.roll(phi,1) + 47/60*phi \
+            + 9/20*np.roll(phi,-1) - 1/20*np.roll(phi,-2)
