@@ -184,7 +184,7 @@ For a non-uniform grid
 \begin_inset Graphics
 	filename shots/eqn1p6.png
 	lyxscale 50
-	scale 50
+	width 100text%
 
 \end_inset
 
@@ -222,8 +222,12 @@ where
 \begin_inset Graphics
 	filename shots/eqn1p7.png
 	lyxscale 50
-	scale 50
+	width 100text%
 
+\end_inset
+
+
+\begin_inset Newline newline
 \end_inset
 
 
@@ -246,7 +250,7 @@ literal "false"
 \begin_inset Graphics
 	filename shots/eqn1p8.png
 	lyxscale 50
-	scale 50
+	width 60text%
 
 \end_inset
 
@@ -266,7 +270,7 @@ a_{j+1/2}=\frac{7}{12}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{1}{12}\left(a_{j+
 \begin_inset Graphics
 	filename shots/eqn1p10.png
 	lyxscale 50
-	scale 50
+	width 100text%
 
 \end_inset
 
@@ -422,6 +426,587 @@ a_{6,j} & = & 6\left(a_{j}^{(n)}-\frac{1}{2}\left(a_{j-1/2}+a_{j+1/2}\right)\rig
 \Delta a_{12j} & = & a_{12,j+1/2}-a_{12,j-1/2}\\
  & = & \sum_{f}\frac{\Delta x^{2}}{6}\hat{\mathbf{S}}\cdot\frac{\nabla_{j}a-\nabla_{N}a}{\Delta x}
 \end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+PPM with AdImEx (Adaptively Implicit-Explicit)
+\end_layout
+
+\begin_layout Standard
+Can PPM be combined with AdImEx for large Courant numbers?
+ Define 
+\begin_inset Formula $\beta$
+\end_inset
+
+ on faces which is the blend between implicit and explicit:
+\begin_inset Formula 
+\begin{equation}
+\beta=1-1/\max\left(c,1\right)
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+a^{(n+1)}=a^{(n)}-\frac{\Delta t}{\mathcal{V}}\sum_{\text{faces}}\left\{ \left(1-\beta\right)\overline{a}_{f}^{\text{PPM}}+\beta a_{\text{up}}^{(n+1)}\right\} \phi
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\overline{a}_{f}^{\text{PPM}}$
+\end_inset
+
+ is the PPM face value calculated using normal velocity 
+\begin_inset Formula $\left(1-\beta\right)u$
+\end_inset
+
+,
+ where 
+\begin_inset Formula $u$
+\end_inset
+
+ is the normal component of the velocity on the face and
+\begin_inset Formula 
+\begin{eqnarray*}
+u=\mathbf{u}\cdot\hat{\mathbf{S}} &  & \phi=\mathbf{u}\cdot\mathbf{S}
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ is the outward pointing face area vector and 
+\begin_inset Formula $a_{\text{up}}$
+\end_inset
+
+ is the value of 
+\begin_inset Formula $a$
+\end_inset
+
+ in the cell upwind of the face.
+ There is no dimensions splitting involved in this definition of PPM.
+ The PPM flux is defined for uniform grid spacing,
+ 
+\begin_inset Formula $\Delta x$
+\end_inset
+
+,
+ indexed by 
+\begin_inset Formula $j$
+\end_inset
+
+,
+ with the face at 
+\begin_inset Formula $j+1/2$
+\end_inset
+
+ with 
+\begin_inset Formula $u\ge0$
+\end_inset
+
+ as
+\begin_inset Formula 
+\begin{eqnarray}
+a_{j+1/2} & = & \frac{7}{12}\left(a_{j}^{n}+a_{j+1}^{n}\right)-\frac{1}{12}\left(a_{j+2}^{n}+a_{j-1}^{n}\right)\\
+\Delta a_{j} & = & a_{j+1/2}-a_{j-1/2}\\
+a_{6,j} & = & 6\left(a_{j}^{n}-\frac{1}{2}\left(a_{j-1/2}+a_{j+1/2}\right)\right)\\
+\overline{a}_{j+1/2}^{\text{PPM}} & = & a_{j+1/2}-\left(1-\beta\right)\frac{u\Delta t}{2\Delta x}\left(\Delta a_{j}-\left(1-\frac{2}{3}\left(1-\beta\right)\frac{u\Delta t}{\Delta x}\right)a_{6,j}\right)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+OpenFOAM's Cubic Interpolation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda$
+\end_inset
+
+ are the interpolation weights so on a uniform grid,
+ 
+\begin_inset Formula $\lambda=\frac{1}{2}$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{eqnarray*}
+k_{Sc} & = & \lambda\left(1-\lambda\left(3-2\lambda\right)\right)\\
+k_{P} & = & \lambda\left(1-\lambda\right)^{2}\\
+k_{N} & = & \lambda^{2}\left(\lambda-1\right)
+\end{eqnarray*}
+
+\end_inset
+
+Cubic is a correction on linear.
+ Linear is
+\begin_inset Formula 
+\[
+a_{f}^{\text{lin}}=\lambda a_{P}+\left(1-\lambda\right)a_{N}
+\]
+
+\end_inset
+
+Cubic uses
+\begin_inset Formula 
+\begin{equation}
+a_{f}^{\text{cub}}=a_{f}^{\text{lin}}+k_{Sc}a_{P}-k_{Sc}a_{N}
+\end{equation}
+
+\end_inset
+
+For 
+\begin_inset Formula $\lambda=\frac{1}{2}$
+\end_inset
+
+ this gives
+\begin_inset Formula 
+\begin{equation}
+a_{f}^{\text{cub}}=\frac{1}{2}a_{P}+\frac{1}{2}a_{N}=a_{f}^{\text{lin}}
+\end{equation}
+
+\end_inset
+
+But then cubic also uses
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{f}^{\text{cub}} & = & a_{f}^{\text{lin}}+\left(k_{P}\nabla_{P}a+k_{N}\nabla_{N}a\right)\cdot\mathbf{dx}
+\end{eqnarray*}
+
+\end_inset
+
+On a uniform,
+ 1d grid,
+ 
+\begin_inset Formula $k_{P}=\frac{1}{8}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $k_{N}=-\frac{1}{8}$
+\end_inset
+
+,
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{j+1/2}^{\text{cub}} & = & \frac{1}{2}a_{j}+\frac{1}{2}a_{j+1}+\frac{1}{16}\left(a_{j+1}-a_{j-1}-a_{j+2}+a_{j}\right)\\
+ & = & \frac{1}{16}\left(-a_{j+2}+9a_{j+1}+9a_{j}-a_{j-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Check.
+ Assume 
+\begin_inset Formula $a=x^{3}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\Delta x=2$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\implies a_{j}=-1,$
+\end_inset
+
+ 
+\begin_inset Formula $a_{j+1}=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $a_{j-1}=-3$
+\end_inset
+
+,
+ 
+\begin_inset Formula $a_{j+2}=3$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\implies a_{j+1/2}=\frac{1}{16}\left(-3+9-9+3\right)=0$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Assume 
+\begin_inset Formula $a=x^{2}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\implies a_{j}=-1,$
+\end_inset
+
+ 
+\begin_inset Formula $a_{j+1}=1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $a_{j-1}=-3$
+\end_inset
+
+,
+ 
+\begin_inset Formula $a_{j+2}=3$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\implies a_{j+1/2}=\frac{1}{16}\left(-3+9-9+3\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x^{4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $j-1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+81
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $j$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $j+1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $j+2$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+81
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $a_{j+1/2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{1}{16}\left(-3+9-9+3\right)=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{1}{16}\left(-27+9-9+27\right)=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{1}{16}\left(-9+9+9-9\right)=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{1}{16}\left(-81+9+9-81\right)=-9$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
 \end_inset
 
